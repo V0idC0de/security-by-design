@@ -1,0 +1,4 @@
+{
+  "admin": ["alice", "bob"],
+  "students": ["carla", "dave", "emma"]
+}

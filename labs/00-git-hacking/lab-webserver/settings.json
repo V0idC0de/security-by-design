@@ -1,0 +1,5 @@
+{
+    "webroot": "./webroot",
+    "blocklist": ["config"],
+    "port": 8000
+}
