@@ -1,0 +1,29 @@
+---
+repos:
+  # Standard pre-commit hooks für grundlegende Dateiformatierung
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  # Entfernt überflüssige Leerzeichen am Zeilenende
+  - id: trailing-whitespace
+  # Stellt sicher, dass am Dateiende nur eine Leerzeile steht
+  - id: end-of-file-fixer
+
+  # YAML-Formatierung
+- repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+  rev: 0.2.1
+  hooks:
+  - id: yamlfmt
+    args: [--mapping, '2', --sequence, '2', --offset, '0']
+
+  # Python Formatierung und Linting mit "black"
+- repo: https://github.com/psf/black
+  rev: 25.1.0
+  hooks:
+  - id: black
+
+  # Findet potenzielle Geheimnisse und Zugangsdaten im Repository
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.28.0
+  hooks:
+  - id: gitleaks
