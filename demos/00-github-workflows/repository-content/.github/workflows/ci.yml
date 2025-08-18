@@ -1,0 +1,35 @@
+name: Repository Content CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  trufflehog:
+    name: TruffleHog Secret Scan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          scan: .
+
+  format:
+    name: Format Check (Python & YAML)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install formatters
+        run: pip install black yamllint
+      - name: Run black (Python formatter)
+        run: black --check .
+      - name: Run yamllint (YAML linter)
+        run: yamllint .
