@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM python:3.11-slim
 
 # Installiere git und weitere benötigte Tools
@@ -15,17 +13,14 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
 # Kopiere lab-metadata, mit Konfigurationen und Dateien für das Lab
-COPY lab-metadata/ /home/$USERNAME/
-
-# Kopiere den Lab-Inhalt ins Home-Verzeichnis des Benutzers
-COPY lab-repository/ /home/$USERNAME/lab-repository
+COPY lab-homedir/ /home/$USERNAME/
 
 # Setze Berechtigungen für den Benutzer
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # Arbeite im Folgenden als nicht-root Benutzer
 USER $USERNAME
-# Setze $PATH, sodass pip-Tools korrekt gefunden werden
+# Setze $PATH, sodass pip-Tools (hier "pre-commit") korrekt gefunden werden
 ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 
 # Schreibe einen Commit in die Historie und entferne das Secret aus README.md
