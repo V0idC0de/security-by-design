@@ -32,4 +32,7 @@ batcat *
 batcat config/*
 # Führe trufflehog aus - ein Secret wird in einem vergangenen Commit entdeckt
 trufflehog git file://.
+
+# TODO: Add additional step to run Bandit on Python code
+#       Introduce sample.py file with an obvious SQL Injection bug.
 ```
