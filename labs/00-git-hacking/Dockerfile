@@ -6,24 +6,10 @@ ARG WEBSERVER_PATH=/lab-webserver
 
 # Installiere git und weitere benötigte Tools
 RUN apt-get update && \
-    apt-get install -y git nano vim bat curl wget && \
+    apt-get install -y git nano vim bat jq curl wget && \
     rm -rf /var/lib/apt/lists/*
 
-# Install TruffleHog
-RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
-    | sh -s -- -b /usr/local/bin $TRUFFLEHOG_VERSION
-
-# Install githacker
-RUN pip install GitHacker==$GITHACKER_VERSION
-
 COPY lab-webserver $WEBSERVER_PATH
-WORKDIR $WEBSERVER_PATH/webroot
-# TODO: Mock Git Repository History -> INSERT SECRETS
-RUN git init && \
-    git config user.name "TheD3V" && \
-    git config user.email "thedev@example.com" && \
-    git add . && \
-    git commit -m "Initial commit"
 
 # Erstelle einen nicht-root Benutzer
 ARG USERNAME=labuser
@@ -34,6 +20,24 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chown -R $USERNAME:$USERNAME /home/$USERNAME $WEBSERVER_PATH
 
 USER $USERNAME
+
+# Install TruffleHog
+RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
+    | sh -s -- -b /home/$USERNAME/.local/bin $TRUFFLEHOG_VERSION
+
+# Install githacker
+RUN pip install GitHacker==$GITHACKER_VERSION
+
+WORKDIR $WEBSERVER_PATH/webroot
+RUN git init && \
+git config user.name "TheD3V" && \
+git config user.email "thedev@example.com" && \
+git add . && \
+git commit -m "Initial commit"
+
+# Simulate Git history
+RUN bash $WEBSERVER_PATH/commit-generator.sh $WEBSERVER_PATH/webroot/config/db.json
+
 # Setze $PATH, sodass pip-Tools (hier "pre-commit") korrekt gefunden werden
 ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 WORKDIR /home/$USERNAME
