@@ -1,0 +1,5 @@
+# Sample YAML file for demonstration
+hello: Security by Design
+list:
+  - item1
+  - item2
