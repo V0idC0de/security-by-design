@@ -1,0 +1,5 @@
+[init]
+  defaultBranch = main
+[user]
+  email = labuser@pre-commit.lab
+  name = labuser
