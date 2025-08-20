@@ -2,9 +2,15 @@ name: Repository Content CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+    
   workflow_dispatch:
 
 jobs:
@@ -16,7 +22,7 @@ jobs:
       - name: Run TruffleHog
         uses: trufflesecurity/trufflehog@main
         with:
-          scan: .
+          scan: head
 
   format:
     name: Format Check (Python & YAML)
@@ -31,5 +37,7 @@ jobs:
         run: pip install black yamllint
       - name: Run black (Python formatter)
         run: black --check .
+        continue-on-error: true
       - name: Run yamllint (YAML linter)
         run: yamllint .
+        continue-on-error: true

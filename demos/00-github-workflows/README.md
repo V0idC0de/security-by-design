@@ -2,9 +2,10 @@
 
 Diese Demo zeigt die Verwendung von GitHub Workflows in einem Demo-Repository, das mit Terraform erstellt wurde.
 
+> TOOD: Write a proper documentation of this Demo
+
 ## Voraussetzungen
 
-- [GitHub CLI](https://cli.github.com/) installiert und authentifiziert (`gh auth login`)
 - [Terraform](https://www.terraform.io/) installiert
 
 ## Aufbau des Demo-Repositories
