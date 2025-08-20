@@ -4,6 +4,14 @@ output "repo_url" {
 }
 
 output "create_pr_url" {
-  value       = "${github_pull_request.create.html_url}/compare/${github_branch_default.workflow_lab.branch}...${github_branch.add_python.branch}"
+  value       = "${github_repository.workflow_lab.html_url}/compare/${github_branch_default.default.branch}...${var.branch_name}"
   description = "Link zum erstellen des Pull-Requests vom Feature Branch"
+}
+
+output "repo" {
+  value = github_repository.workflow_lab.full_name
+}
+
+output "repo-name" {
+  value = github_repository.workflow_lab.name
 }

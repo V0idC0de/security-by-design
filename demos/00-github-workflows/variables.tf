@@ -11,3 +11,16 @@ variable "repository_dir" {
   nullable    = false
   default     = "repository-content"
 }
+
+variable "branch_name" {
+  description = "The name of the branch to create."
+  type        = string
+  nullable    = false
+  default     = "add-python"
+}
+
+variable "github_token" {
+  description = "GitHub token for authentication (https://github.com/settings/tokens). Must have 'repo', 'workflow', 'read:org', 'delete_repo', 'read:discussion' scope."
+  type        = string
+  nullable    = false
+}

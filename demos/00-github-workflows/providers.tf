@@ -9,4 +9,5 @@ terraform {
 
 provider "github" {
   # Keine Token-Angabe nötig, falls via GitHub CLI authentifiziert
+  token = var.github_token
 }
