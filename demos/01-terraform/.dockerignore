@@ -1,0 +1,6 @@
+# Ignore all .tfvars and .tfvars.json files everywhere
+**/*.tfvars
+**/*.tfvars.json
+
+# Except .tfvars.json files in configuration/inputs/
+!inputs/sample.*.tfvars.json
