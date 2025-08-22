@@ -211,7 +211,7 @@ Falls bereits ein Container mit diesem Namen existiert, kann er vorher entfernt 
 Dies kann verwendet werden, um mit dem Lab neu zu starten.
 
 ```bash
-docker rm -f pre-commit-lab
+docker rm -f pre-commit-hooks
 ```
 
 Nach Ausführung des zweiten Befehls befindet man sich direkt in einer Shell im Container und kann dort alle Übungen durchführen.
