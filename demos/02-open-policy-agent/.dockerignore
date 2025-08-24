@@ -1,0 +1,12 @@
+# Ignore Terraform-related runtime files
+**/.terraform
+**/terraform.tfstate
+**/terraform.tfstate.backup
+
+# Exclude Terraform's lock files, except the one in the root
+**/terraform.lock.hcl
+!workspace/terraform.lock.hcl
+
+# Ignore all .tfvars and .tfvars.json files everywhere
+**/*.tfvars
+**/*.tfvars.json
