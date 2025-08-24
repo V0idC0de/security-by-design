@@ -69,7 +69,8 @@ locals {
     "main.tf",
     "providers.tf",
     "settings.yaml",
-    "variables.tf"
+    "variables.tf",
+    ".terraform.lock.hcl"
   ]
   repo_files = {
     for f in local.files_to_upload :
