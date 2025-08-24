@@ -49,6 +49,7 @@ nano github-pat.auto.tfvars.json
 > Derartige Secrets sollten nicht in ein Repository committet werden.
 > Daher schließt die `.gitignore` dieses Repositories alle `.tfvars` Dateien von Git aus,
 > sodass keine versehentlichen Commits mit sensiblen Datein passieren.
+> Einzige Ausnahme von der `.gitignore` sind die `sample.*.tfvars.json` Dateien, die später verwendet werden.
 
 ### 2. Terraform Plan ausführen
 
@@ -64,7 +65,7 @@ terraform plan
 > Beachte, wie Terraform nach fehlenden Eingabevariablen fragt.
 > Bei interaktiver Nutzung ist das praktisch, doch in einer automatisierten Umgebung
 > wie einer GitHub-Pipeline wäre dies problematisch.
-> 
+>
 > Breche diesen Befehl mit CTRL+C ab.
 
 ```bash
@@ -84,7 +85,7 @@ less variables.tf
 
 # Betrachte den Input des ersten Inputs
 less inputs/sample.1.tfvars.json
- 
+
 # (Optional) Finde mit einer kurzen Suche die Orte,
 # an denen die Variablen mit `var.VARNAME` verwendet werden.
 # Vollziehe diese Verwendung nach.
@@ -117,7 +118,7 @@ wo die URLs der Repositories schnell einsehbar sind.
 
 > [!NOTE]
 > Dieselbe Input-Datei `sample.1.tfvars.json` könnte auch verändert und wiederverwendet werden.
-> Dass hier verschiedene Input-Dateien genutzt werden dient nur der besseren Durchführbarkeit 
+> Dass hier verschiedene Input-Dateien genutzt werden dient nur der besseren Durchführbarkeit
 > ohne manuelle Änderungen an den Dateien.
 
 ```bash
@@ -141,7 +142,7 @@ terraform plan -var-file inputs/sample.3.tfvars.json
 > Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
 
 > [!NOTE]
-> Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt, 
+> Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
 > sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
 
 > [!WARNING]
@@ -170,7 +171,7 @@ terraform apply -var-file inputs/sample.3.tfvars.json
 ```
 
 > [!NOTE]
-> Beachte, wie Terraform erkennt, dass eine der Dateien nicht mehr den erwarteten Inhalt hat. 
+> Beachte, wie Terraform erkennt, dass eine der Dateien nicht mehr den erwarteten Inhalt hat.
 > Diese Änderung außerhalb von Terraform wird als **"State Drift"** bezeichnet und ist generell unerwünscht,
 > da Infrastructure-as-Code darauf abzielt, dass alles genau so existiert, wie im Code konfiguriert.
 > Terraform wird die Änderung erkennen und den gewünschten Zustand wiederherstellen wollen.
@@ -204,7 +205,7 @@ Ebenso wird auf Änderungen der Infrastruktur oder gewünschen Konfiguration rea
 Beachte im letzten Schritt beim Abbau besonders, wie Terraform zuverlässig und vollständig alle verwalteten Ressourcen
 zerstört. Übertrage dies auf ein praktisches Szenario, in dem z.B. Infrastruktur für eine Webapplikation erstellt wird und verschiedene Ressourcen wie Storage Buckets, Domainnamen, Domain-Einträge, IP-Adressen, Firewall-Regeln und ähnliche Ressourcen angelegt werden.
 
-Ohne ein Tool wie Terraform ist es schwierig, diese Ressourcen korrekt einzeln abzubauen und 
+Ohne ein Tool wie Terraform ist es schwierig, diese Ressourcen korrekt einzeln abzubauen und
 logische Verbindungen zwischen Werten in der Konfiguration akkurat abzubilden.
 Manuell gepflegte Listen veralten schnell führen schnell dazu, dass einige dieser Ressourcen in einem schwer
 zu wartenden "Shadow-IT"-Dasein verschwinden.
