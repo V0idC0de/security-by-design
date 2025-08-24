@@ -1,5 +1,5 @@
 {
     "webroot": "./webroot",
-    "blocklist": ["config"],
+    "blocklist": ["config", "db_api.py"],
     "port": 8000
 }
