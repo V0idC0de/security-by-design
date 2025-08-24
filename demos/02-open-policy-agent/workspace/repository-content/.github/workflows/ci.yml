@@ -1,0 +1,52 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+
+  workflow_dispatch:
+
+jobs:
+  tf-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-24.04
+    env:
+      TERRAFORM_VERSION: "1.13.0"
+      CONFTEST_VERSION: "0.62.0"
+    outputs:
+      plan_json_encrypted: ${{ steps.tf-plan.outputs.plan_json }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan (JSON)
+        id: tf-plan
+        env:
+          TF_VAR_github_token: ${{ secrets.GH_PAT }}
+        run: |
+          terraform plan -out=tfplan.binary
+          terraform show -json tfplan.binary > terraform-plan.json
+
+      - name: Setup open-policy-agent/conftest
+        run: |
+          wget -o conftest.deb "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_linux_amd64.deb"
+          sudo dpkg -i conftest_${CONFTEST_VERSION}_linux_amd64.deb >/dev/null
+
+      - name: Run OPA Policy Check
+        env:
+          TF_PLAN_JSON: ${{ steps.tf-plan-decrypt.outputs.plan_json }}
+        run: conftest test --policy policy --all-namespaces --strict --output github terraform-plan.json
