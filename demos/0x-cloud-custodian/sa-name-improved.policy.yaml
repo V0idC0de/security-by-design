@@ -1,0 +1,16 @@
+policies:
+  - name: scan-serviceaccount-name-prefix
+    resource: gcp.service-account
+    filters:
+      - and:
+        - not:
+          - type: value
+            key: email
+            op: glob
+            value: "svc-*"
+        - type: value
+          key: email
+          op: glob
+          value: "*.iam.gserviceaccount.com"
+    actions:
+      - type: disable
