@@ -30,7 +30,7 @@ variable "region" {
   description = "The GCP region"
   type        = string
   nullable    = false
-  default     = "europe-west4"
+  default     = "europe-west3"
 }
 
 variable "services" {

@@ -27,4 +27,5 @@ resource "local_file" "output" {
     region                          = var.region
     custodian_service_account_email = google_service_account.custodian.email
   })
+  file_permission = "0644"
 }
