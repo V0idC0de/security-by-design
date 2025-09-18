@@ -45,7 +45,7 @@ Wechsle zur Vorbereitung in den `terraform` Ordner.
 
 ```bash
 ls -l
-cd workspace
+cd terraform
 ```
 
 > [!NOTE]
@@ -59,6 +59,7 @@ Führe die notwendigen Login-Kommandos für die Google Cloud CLI aus:
 ```bash
 gcloud auth login
 gcloud auth application-default login
+# Die Warnung bezüglich des "Quota Projekts" werden gleich adressiert und können ignoriert werden.
 ```
 
 ### 3. Infrastruktur mit Terraform bereitstellen
@@ -67,6 +68,7 @@ Erstelle die nötige Infrasturktur in Google Cloud. Es wird unter anderem ein Se
 dessen Name absichtlich gegen die Policy verstößt. Cloud Custodian wird diesen erkennen und das Problem behandeln.
 
 ```bash
+terraform init
 terraform apply
 ```
 
@@ -82,7 +84,7 @@ Die  `project_id` des erstellten Projekts in gleich wichtig. Details zu den Outp
 Setze eine Hilfsvariable, um die `project_id` schneller verfügbar zu haben.
 
 ```bash
-export PROJECT_ID="$(jq '.project_id' outputs.json)"
+export PROJECT_ID="$(jq -r '.project_id' outputs.json)"
 # Alternativ direkt aus Terraform (nur einer der beiden Befehle ist nötig)
 export PROJECT_ID="$(terraform output -json | jq -r '.project_id.value')"
 ```
@@ -125,6 +127,9 @@ Liste alle Service Accounts auf und beachte, dass sie alle aktiviert sind:
 gcloud iam service-accounts list
 ```
 
+Die Accounts `svc-custodian-fn` und `barista-bot` wurden von Terraform erstellt. `...@appspot.gserviceaccount.com` ist ein von Google
+automatisch erstellter, interner Account. Der `barista-bot` verstößt gegen die Richtlinie zu Namen und soll via Cloud Custodian behandelt werden.
+
 ### 7. Policy anwenden und Ergebnisse prüfen
 
 Führe die Policy mit Cloud Custodian aus (ein `--output-dir` ist leider immer nötig) und gib die zu prüfende Policy an.
@@ -132,6 +137,8 @@ Anschließend liste erneut die Service Accounts und beachte, dass zwei Accounts 
 
 ```bash
 custodian run --output-dir logs sa-name-basic.policy.yaml
+# Manchmal brauchen Änderungen an Service Accounts ein paar Momente, um korrekt angezeigt zu werden.
+# Lasse ein paar Sekunden Zeit, bis du das `gcloud`-Kommando ausführst.
 gcloud iam service-accounts list
 ```
 
@@ -151,12 +158,18 @@ Aktiviere die beiden Service Accounts wieder:
 ```bash
 gcloud iam service-accounts enable "${PROJECT_ID}@appspot.gserviceaccount.com"
 gcloud iam service-accounts enable "barista-bot@${PROJECT_ID}.iam.gserviceaccount.com"
+# Manchmal brauchen Änderungen an Service Accounts ein paar Momente, um korrekt angezeigt zu werden.
+# Lasse ein paar Sekunden Zeit, bis du das `gcloud`-Kommando ausführst.
+gcloud iam service-accounts list
 ```
 
 ### 9. Verbesserte Policy anwenden
 
 Untersuche die Datei `sa-name-improved.policy.yaml`, die eine zusätzliche Prüfung enthält.
-Führe dann die verbesserte Policy aus:
+Manuell angelegte Service Accounts enden in Google Cloud immer auf `iam.gserviceaccount.com`.
+Diese zusätzliche Bedingung verhindert ungewollten "Beifang".
+
+Führe die verbesserte Policy aus:
 
 ```bash
 bat sa-name-improved.policy.yaml
@@ -202,10 +215,10 @@ Cloud Custodian wird dann sofort ausgeführt und die Remediation erfolgt unmitte
 
 ### 1. Konfiguration der Echtzeit-Policy
 
-Untersuche die neue Policy-Datei `sa-name-realtime.template.yaml`. Achte speziell auf das Feld `service-account` und den Platzhalter.
+Untersuche die neue Policy-Datei `sa-name-realtime.template.yaml`. Achte speziell auf das Feld `service-account` und den Platzhalter `PROJECT_ID`.
 
 ```bash
-bat sa-name-realtime.policy.yaml
+bat sa-name-realtime.template.yaml
 ```
 
 Die folgenden Details sind hier wichtig:
@@ -213,7 +226,7 @@ Die folgenden Details sind hier wichtig:
 - Der Modus `gcp-audit` ist gesetzt, wodurch die Policy als Echtzeit-Überwachung deployed und nicht als einmalige Prüfung ausgeführt wird.
 - Ein expliziter Service Account ist angegeben, in dessen Namen die Cloud Function ausführt wird
   - Dieser Service Account benötigt die Berechtigung, die Remediation-Aktion durchzuführen
-  - `roles/iam.serviceAccountAdmin` wurde bereits via Terraform an diesen Service Acconut vergeben
+  - `roles/iam.serviceAccountAdmin` wurde bereits via Terraform an diesen Service Account vergeben
 
 ### 2. Ersetzung des Platzhalters
 
@@ -224,21 +237,21 @@ Trage deine Projekt-ID manuell ein oder nutze das folgende Kommando, um das auto
 > Die nachfolgenden Schritte nach diesem gehen davon aus, dass die Datei so heißt.
 
 ```bash
-`sed "s/PROJECT_ID/${PROJECT_ID}/" sa-name-realtime.template.yaml | tee sa-name-realtime.policy.yaml`
+sed "s/PROJECT_ID/${PROJECT_ID}/" sa-name-realtime.template.yaml | tee sa-name-realtime.policy.yaml
 ```
 
 ### 3. Deployment der Cloud Function
 
 ```bash
-gcloud config set functions/region "$(jq '.region' outputs.json)"
 custodian run --output-dir logs sa-name-realtime.policy.yaml
 ```
 
 > [!WARNING]
-> Sollte hier eine Fehlermeldung mit `PERMISSION DENIED` im Zusammenhang mit der Region erscheinen, ist es möglich,
-> dass die Region keine Cloud Functions der 1. Generation unterstützt. Versuche eine andere Region via `gcloud config set` zu setzen.
+> Sollte hier eine Fehlermeldung mit `"Permission denied on 'locations/...` erscheinen, ist es möglich,
+> dass die Region keine Cloud Functions der 1. Generation unterstützt. Die Region kann auch weggelassen werden.
 
-Die Bereitstellung dauert etwas länger als zuvor. Nach etwa einer Minute kann die erfolgreiche Bereitstellung mit folgendem Befehl überprüft werden:
+Das Deployment von Cloud Functions dauert einen Moment, wegen den Build-Prozesses im Hintergrund.
+Prüfe mit dem folgenden Kommendo, ob der `STATE` auf `ACTIVE` steht, dann fahre fort.
 
 ```bash
 gcloud functions list
@@ -313,6 +326,7 @@ cd security-by-design/demos/03-cloud-custodian
 ```
 
 ```bash
+# Für diese Demo werden mehrere Tools vorbereitet - der Build-Prozess kann wenige Minuten dauern.
 docker build -t demo/custodian .
 ```
 
