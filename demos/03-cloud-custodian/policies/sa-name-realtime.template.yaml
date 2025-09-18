@@ -1,0 +1,23 @@
+policies:
+  - name: gcp-service-account-naming-enforcement
+    resource: gcp.service-account
+    mode:
+      type: gcp-audit
+      methods:
+        - google.iam.admin.v1.CreateServiceAccount
+        - google.iam.admin.v1.EnableServiceAccount
+        - google.iam.admin.v1.PatchServiceAccount
+      service-account: svc-custodian-fn@PROJECT_ID.iam.gserviceaccount.com
+    filters:
+      - and:
+        - not:
+          - type: value
+            key: email
+            op: glob
+            value: "svc-*"
+        - type: value
+          key: email
+          op: glob
+          value: "*.iam.gserviceaccount.com"
+    actions:
+      - type: disable
