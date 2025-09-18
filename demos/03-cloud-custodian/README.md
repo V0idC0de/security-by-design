@@ -1,6 +1,6 @@
-# 01 Terraform
+# 03 Cloud Custodian
 
-- [01 Terraform](#01-terraform)
+- [03 Cloud Custodian](#03-cloud-custodian)
   - [Durchführung (Teil 1 - On-Demand)](#durchführung-teil-1---on-demand)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
     - [2. Login mit Google Cloud SDK/CLI](#2-login-mit-google-cloud-sdkcli)
