@@ -296,6 +296,7 @@ Diese Demo kann selbst nachvollzogen und durchgearbeitet werden.
 Voraussetzung ist:
 
 - eine Installation von `docker` (empfohlen), wobei du den Schritten für eine [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker) folgen kannst
+- ein Google Cloud Account
 
 ODER
 
