@@ -217,13 +217,13 @@ Diese Demo kann selbst nachvollzogen und durchgearbeitet werden.
 
 Voraussetzung ist:
 
-- eine Installation von `terraform` ([Installation](https://developer.hashicorp.com/terraform/install)) (siehe Anmerkung unten)
+- eine Installation von `docker` (empfohlen), wobei du den Schritten für eine [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker) folgen kannst
+
+ODER
+
+- eine Installation von `terraform` ([Installation](https://developer.hashicorp.com/terraform/install))
 - ein GitHub Account
 - ein GitHub Personal Access Token (siehe Beschreibung der Variable in `variables.token.tf`)
-
-> [!NOTE]
-> Alternativ kann eine lokale Installation von `terraform` durch `docker` ersetzt werden.
-> Befolge dafür die Schritte [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker).
 
 ### Lokale Umgebung mit Docker
 
