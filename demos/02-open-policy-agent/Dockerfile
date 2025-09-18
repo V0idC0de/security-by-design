@@ -1,7 +1,8 @@
 FROM hashicorp/terraform:1.13
 
 # Installiere grundlegende Pakete
-RUN apk add --no-cache less nano vim busybox-extras jq shadow bash
+RUN apk add --no-cache less nano vim bat busybox-extras shadow bash curl jq yq \
+&& ln -s "$(which bat)" "$(dirname $(which bat))/batcat"
 
 # Erstelle einen nicht-root Benutzer
 ARG USERNAME=labuser
