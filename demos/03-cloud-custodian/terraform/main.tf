@@ -46,7 +46,8 @@ resource "google_service_account" "custodian" {
   project      = local.project.project_id
 }
 
-# Allow impersonation of the Custodian Service Account for local execution as that account
+# Allow impersonation of the Custodian Service Account for local execution as that account.
+# Currently unused, but helpful for debugging. Set environment variable GOOGLE_IMPERSONATE_SERVICE_ACCOUNT.
 resource "google_service_account_iam_binding" "impersonation" {
   service_account_id = google_service_account.custodian.name
   role               = "roles/iam.serviceAccountTokenCreator"
