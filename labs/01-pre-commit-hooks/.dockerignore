@@ -1,5 +1,6 @@
 **/.git
 **/.gitignore
+!lab-homedir/lab-repository/.gitignore
 **/__pycache__/
 **/*.pyc
 **/*.pyo

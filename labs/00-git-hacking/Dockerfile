@@ -21,6 +21,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chown -R $USERNAME:$USERNAME /home/$USERNAME $WEBSERVER_PATH
 
 USER $USERNAME
+# Setze $PATH, sodass pip-Tools (hier "pre-commit") korrekt gefunden werden
+ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 
 # Installiere TruffleHog
 RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
@@ -39,8 +41,6 @@ git commit -m "Initial commit"
 # Simuliere etwas Git History
 RUN bash $WEBSERVER_PATH/commit-generator.sh $WEBSERVER_PATH/webroot/config/db.json
 
-# Setze $PATH, sodass pip-Tools (hier "pre-commit") korrekt gefunden werden
-ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 WORKDIR /home/$USERNAME
 
 # ARGs können in ENTRYPOINTs nicht gut verwendet werden - daher nochmal als ENV
