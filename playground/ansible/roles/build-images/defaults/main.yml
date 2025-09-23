@@ -1,0 +1,9 @@
+---
+# Default variables for build-images role
+github_repo: https://github.com/V0idC0de/security-by-design.git
+ref: main
+repo_dest: "/home/{{ ansible_user }}/security-by-design"
+# Optionally allow customizing the folders to search for Dockerfiles
+docker_parent_dirs:
+  - labs
+  - demos

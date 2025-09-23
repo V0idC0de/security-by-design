@@ -30,7 +30,6 @@ Host lab-host
     IdentityFile ${local.ssh.priv_path}
     IdentitiesOnly yes
     StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
 EOT
   filename        = local.ssh.config_path
   file_permission = "0600"

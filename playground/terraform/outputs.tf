@@ -2,7 +2,7 @@ locals {
   outputs = {
     public_ip      = google_compute_instance.container-host.network_interface[0].access_config[0].nat_ip
     initial_user   = var.machine.username
-    inventory_path = abspath("${path.module}/../ssh/inventory")
+    inventory_path = abspath("${path.module}/../ansible/inventory")
     ssh            = { for k, v in local.ssh : k => abspath(v) }
   }
 }
@@ -32,7 +32,8 @@ resource "local_file" "ansible_inventory" {
   content = join(" ", [
     local.outputs.public_ip,
     "ansible_user=${local.outputs.initial_user}",
-    "ansible_ssh_private_key_file=${local.outputs.ssh.priv_path}"
+    "ansible_ssh_private_key_file=${local.outputs.ssh.priv_path}",
+    "ansible_ssh_common_args='-F ${local.ssh.config_path} -o StrictHostKeyChecking=no'",
   ])
   filename        = local.outputs.inventory_path
   file_permission = "0600"
