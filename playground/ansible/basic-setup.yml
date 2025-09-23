@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
+- hosts: all
+  become: true
+
+  vars:
+    pip_install_packages:
+      - name: docker
+  vars_files:
+
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.git
+    - lab-users
