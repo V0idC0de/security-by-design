@@ -4,11 +4,9 @@
   become: true
 
   vars:
-    pip_install_packages:
-      - name: docker
   vars_files:
 
   roles:
-    - geerlingguy.docker
     - geerlingguy.git
-    - lab-users
+    - geerlingguy.docker
+    - build-images
