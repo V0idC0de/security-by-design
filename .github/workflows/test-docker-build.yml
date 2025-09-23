@@ -1,23 +1,19 @@
-name: Test Docker Builds on Labs and Demos Changes
+name: Docker Build Test
 
 on:
   push:
     paths:
       - "labs/**"
       - "demos/**"
-  pull_request:
-    paths:
-      - "labs/**"
-      - "demos/**"
 
 jobs:
-  changed_files:
+  changed-files:
     runs-on: ubuntu-24.04
-    name: Test changed-files
+    name: Find changed Environments
     outputs:
       matrix: ${{ steps.changed-labs.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -27,7 +23,8 @@ jobs:
         with:
           dir_names: true
           dir_names_exclude_current_dir: true
-          json: true
+          # Alias for "json: true" and "escape_json: false" for matrix use
+          matrix: true
 
       - name: Find changed labs and demos directories
         id: changed-labs
@@ -37,23 +34,36 @@ jobs:
           # Parse the JSON array of changed files, truncate each path to two levels, deduplicate, and output as compact JSON.
           result="$(
             jq -c \
-            '[.[] | split("/") | select(length >= 2) | .[0:2] | join("/")] | unique' \
+            '[.[] | split("/") | select(length >= 2) | .[0:2] | join("/") | select(startswith("labs/") or startswith("demos/"))] | unique' \
             <<< "$ALL_CHANGED_FILES"
           )"
           echo "matrix=$result" >> $GITHUB_OUTPUT
 
   build-docker-images:
-    needs: changed_files
+    needs: changed-files
+    name: Docker Build
     runs-on: ubuntu-24.04
     strategy:
-      matrix: ${{ fromJson(needs.changed_files.outputs.matrix) }}
+      matrix:
+        dir: ${{ fromJson(needs.changed-files.outputs.matrix) }}
       fail-fast: false
+    env:
+      IMAGE_NAME: test-image
     steps:
-      # Checkout the repository
+      - uses: actions/checkout@v5
+
       - name: Build Docker Image
-        uses: docker/build-push-action@v6.18.0
-        with:
-          push: false
-          context: ./${{ matrix }}
-          file: ./${{ matrix }}/Dockerfile
-          tags: test:latest
+        working-directory: ${{ matrix.dir }}
+        run: docker build -t "$IMAGE_NAME" .
+
+      - name: Run Container
+        run: |
+          # --tty is important to simulate a input-terminal, so the Container does not exit immediately
+          docker run --detach --tty "$IMAGE_NAME"
+          sleep 3
+          if [[ -z "$(docker ps --filter "status=running" --format '{{.Image}}')" ]]; then
+            echo "❌ Container is no longer running after 3 seconds!"
+            exit 1
+          else
+            echo "✅ Container is still running after 3 seconds - test succeeded!"
+          fi
