@@ -2,9 +2,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
 - hosts: all
   become: true
-
-  vars:
   vars_files:
+    - vars/settings.yaml
 
   roles:
-    - lab-users
+    - role: lab-users
+    - role: sshd-lab-users
+      vars:
+        sshd_lab_users: "{{ lab_os_users.results | selectattr('changed', 'equalto', true) | map(attribute='item.name') | list }}"
