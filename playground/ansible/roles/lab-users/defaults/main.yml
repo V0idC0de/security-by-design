@@ -2,3 +2,5 @@ lab_users:
   - rat
   - frog
   - snek
+
+reset_password: false
