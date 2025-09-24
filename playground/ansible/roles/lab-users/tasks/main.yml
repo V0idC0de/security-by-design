@@ -4,18 +4,8 @@
   ansible.builtin.user:
     name: "{{ item }}"
     password: "{{ item | password_hash('sha512') }}"
+    update_password: "{{ 'always' if reset_password else 'on_create' }}"
     state: present
     shell: /bin/bash
   loop: "{{ lab_users }}"
-
-- name: Configure passwordless sudo for docker exec for lab users
-  become: true
-  ansible.builtin.copy:
-    dest: "/etc/sudoers.d/lab-{{ item }}"
-    content: |
-      # Allow user to exec into their lab container without password
-      {{ item }} ALL=(root) NOPASSWD: /usr/bin/docker exec -it lab-{{ item }} /bin/bash
-    owner: root
-    group: root
-    mode: "0440"
-  loop: "{{ lab_users }}"
+  register: lab_os_users
