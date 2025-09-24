@@ -1,0 +1,6 @@
+---
+sshd_lab_user:
+# Name of the Container, in which the shell of the lab users should be forced to.
+# If unset, the access will be denied with the message `sshd_no_lab_message`.
+sshd_container_name:
+sshd_no_lab_message: "No lab is currently activated."
