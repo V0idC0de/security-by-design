@@ -2,8 +2,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
 - hosts: all
   become: true
+
   vars_files:
     - vars/settings.yaml
+
+  vars:
+    lab_users: "{{ lab_users | default([]) }}"
 
   roles:
     - role: lab-users
