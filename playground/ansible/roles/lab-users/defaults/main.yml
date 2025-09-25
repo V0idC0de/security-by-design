@@ -1,6 +1,2 @@
-lab_users:
-  - rat
-  - frog
-  - snek
-
+lab_users: []
 reset_password: false
