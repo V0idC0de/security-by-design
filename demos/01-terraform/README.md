@@ -245,13 +245,13 @@ cd security-by-design/demos/01-terraform
 ```
 
 ```bash
-docker build -t demo/terraform .
+docker build -t demos/01-terraform .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name terraform --hostname terraform demo/terraform
+docker run -it --name terraform --hostname terraform demos/01-terraform
 ```
 
 > [!NOTE]

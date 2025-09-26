@@ -328,13 +328,13 @@ cd security-by-design/demos/03-cloud-custodian
 
 ```bash
 # Für diese Demo werden mehrere Tools vorbereitet - der Build-Prozess kann wenige Minuten dauern.
-docker build -t demo/custodian .
+docker build -t demos/03-cloud-custodian .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name custodian --hostname custodian demo/custodian
+docker run -it --name cloud-custodian --hostname cloud-custodian demos/03-cloud-custodian
 ```
 
 > [!NOTE]
@@ -347,7 +347,7 @@ docker run -it --name custodian --hostname custodian demo/custodian
 Um einen bestehenden, gestoppten Container erneut zu betreten:
 
 ```bash
-docker start -ai custodian
+docker start -ai cloud-custodian
 ```
 
 #### Container löschen/zurücksetzen
@@ -356,7 +356,7 @@ Falls bereits ein Container mit diesem Namen existiert, kann er vorher entfernt 
 Dies kann verwendet werden, um mit dem Lab neu zu starten.
 
 ```bash
-docker rm -f custodian
+docker rm -f cloud-custodian
 ```
 
 Nach Ausführung des zweiten Befehls befindet man sich direkt in einer Shell im Container und kann dort alle Übungen durchführen.
