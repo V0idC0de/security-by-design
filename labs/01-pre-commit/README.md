@@ -1,6 +1,6 @@
-# 00 Pre-Commit Hooks
+# 00 Pre-Commit
 
-- [00 Pre-Commit Hooks](#00-pre-commit-hooks)
+- [00 Pre-Commit](#00-pre-commit)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
     - [2. Untersuche das Git-Repository](#2-untersuche-das-git-repository)
@@ -174,22 +174,22 @@ git clone https://github.com/V0idC0de/security-by-design.git
 ### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `labs/00-pre-commit-hooks` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `labs/01-pre-commit` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/labs/00-pre-commit-hooks
+cd security-by-design/labs/01-pre-commit
 ```
 
 ```bash
-docker build -t lab/pre-commit-hooks .
+docker build -t labs/pre-commit-hooks .
 ```
 
 ### 3. Starten des Containers
 
 ```bash
-docker run -it --name pre-commit-hooks --hostname pre-commit-hooks lab/pre-commit-hooks
+docker run -it --name pre-commit --hostname pre-commit labs/01-pre-commit
 ```
 
 > [!NOTE]
@@ -202,7 +202,7 @@ docker run -it --name pre-commit-hooks --hostname pre-commit-hooks lab/pre-commi
 Um einen bestehenden, gestoppten Container erneut zu betreten:
 
 ```bash
-docker start -ai pre-commit-hooks
+docker start -ai pre-commit
 ```
 
 ### Container löschen/zurücksetzen
@@ -211,7 +211,7 @@ Falls bereits ein Container mit diesem Namen existiert, kann er vorher entfernt 
 Dies kann verwendet werden, um mit dem Lab neu zu starten.
 
 ```bash
-docker rm -f pre-commit-hooks
+docker rm -f pre-commit
 ```
 
 Nach Ausführung des zweiten Befehls befindet man sich direkt in einer Shell im Container und kann dort alle Übungen durchführen.

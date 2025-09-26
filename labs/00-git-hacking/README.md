@@ -137,13 +137,13 @@ cd security-by-design/labs/00-git-hacking
 ```
 
 ```bash
-docker build -t lab/git-hacking .
+docker build -t labs/00-git-hacking .
 ```
 
 ### 3. Starten des Containers
 
 ```bash
-docker run -it --name git-hacking --hostname git-hacking lab/git-hacking
+docker run -it --name git-hacking --hostname git-hacking labs/00-git-hacking
 ```
 
 > [!NOTE]
