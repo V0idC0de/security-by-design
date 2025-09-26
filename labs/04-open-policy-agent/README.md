@@ -71,16 +71,22 @@ terraform init
 
 # Führe Terraform Plan ohne Argumente aus
 terraform plan
+
+# Wende den Plan an
+terraform apply
 ```
 
 > [!WARNING]
-> Das **Personal Access Token**, das Terraform in diesem Aufbauschritt zur Verfügung gestellt wird, wird in das erstellte Repository als Secret abgespeichert,
-> um es dort bei einem `terraform plan` zu verwenden! Zwar lassen sich Secrets nicht von Personen mit Lesezugriff auslesen, doch wer Schreibzugriff in das Repository
-> hat, kann Workflows nutzen, um das Token im Klartext zu erlangen. Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
-> Bedenke, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository sicherheitshalber mit `terraform destroy`, sobald zu fertig bist.
+> Das **Personal Access Token**, das Terraform in diesem Aufbauschritt zur Verfügung gestellt wird,
+> wird im erstellten Repository als Secret gespeichert, um es später für die GitHub Workflows zu nutzen.
+> Zwar lassen sich Secrets nicht von Personen mit Lesezugriff auslesen, doch wer Schreibzugriff auf
+> das Repository hat, kann Workflows nutzen, um das Token im Klartext zu erlangen.
+>
+> Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
+> Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
+> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist.
 
-> [!NOTE]
-> Nach erfolgreichem Apply findest du im Terraform Output die URL zum neuen Repository sowie einen direkten Link zur Pull-Request-Erstellung.
+Nach erfolgreichem `terraform apply` findest du im Terraform Output die URL zum neuen Repository sowie einen direkten Link zur Pull-Request-Erstellung. Mit `terraform output` kommst du schnell an die Outputs.
 
 ### 4. Repository und Pull Request öffnen
 
@@ -89,6 +95,7 @@ Erstelle im Repository einen Pull Request, um z.B. den Branch `feature/add-setti
 
 > [!NOTE]
 > Das Anlegen des Pull Requests löst automatisch den hinterlegten GitHub Actions Workflow aus.
+> Dieses Auslösen dauert bei GitHub manchmal 5-10 Sekunden, bis es im Pull Request angezeigt wird.
 
 ### 5. GitHub Workflow beobachten
 

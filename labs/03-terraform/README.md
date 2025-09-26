@@ -57,9 +57,8 @@ nano github-pat.auto.tfvars.json
 # Speichern und schließen mit Strg+S (speichern), dann Strg+X (verlassen)
 ```
 
-> [!NOTE]
-> `.auto.tfvars` Dateien werden von Terraform bei jedem Lauf automatisch eingelesen.
-> Das ist hier praktisch, da das GitHub-Token immer erforderlich ist.
+`.auto.tfvars` Dateien werden von Terraform bei jedem Lauf automatisch eingelesen.
+Das ist hier praktisch, da das GitHub-Token immer erforderlich ist.
 
 > [!WARNING]
 > Derartige Secrets sollten nicht in ein Repository committet werden.
@@ -154,9 +153,8 @@ terraform plan -var-file inputs/sample.3.tfvars.json
 
 Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
 
-> [!NOTE]
-> Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
-> sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
+Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
+sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
 
 > [!WARNING]
 > Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
