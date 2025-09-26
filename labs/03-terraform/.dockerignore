@@ -5,11 +5,11 @@
 
 # Exclude Terraform's lock files, except the one in the root
 **/terraform.lock.hcl
-!workspace/terraform.lock.hcl
+!terraform/terraform.lock.hcl
 
 # Ignore all .tfvars and .tfvars.json files everywhere
 **/*.tfvars
 **/*.tfvars.json
 
 # Except .tfvars.json files in workspace/inputs/
-!workspace/inputs/sample.*.tfvars.json
+!terraform/inputs/sample.*.tfvars.json
