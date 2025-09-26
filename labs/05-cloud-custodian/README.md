@@ -1,6 +1,6 @@
-# 03 Cloud Custodian
+# 05 Cloud Custodian
 
-- [03 Cloud Custodian](#03-cloud-custodian)
+- [05 Cloud Custodian](#05-cloud-custodian)
   - [Durchführung (Teil 1 - On-Demand)](#durchführung-teil-1---on-demand)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
     - [2. Login mit Google Cloud SDK/CLI](#2-login-mit-google-cloud-sdkcli)
@@ -36,7 +36,7 @@ Wir werden schrittweise die Terraform-Konfiguration erweitern, um zu zeigen, wie
 
 ## Durchführung (Teil 1 - On-Demand)
 
-Die folgenden Schritte gehen davon aus, dass du dich im Verzeichnis `03-cloud-custodian` befindest.
+Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befindet (bereitgestellte Umgebung oder lokal ausgeführter Container).
 
 ### 1. Ordnerstruktur und Vorbereitung
 
@@ -49,17 +49,21 @@ cd terraform
 ```
 
 > [!NOTE]
-> Betrachte optional die bereitgestellten Terraform-Dateien. Einige Tools wie `nano`, `vi`, `less`, `cat` oder `bat` stehen zur Verfügung.
+> (Optional) Betrachte die bereitgestellten Terraform-Dateien.
+> Einige Tools wie `nano`, `vi`, `less`, `cat` oder `bat` stehen zur Verfügung.
 > Alles im Ordner `terraform` dient dazu, Google Cloud Infrastruktur für die Demo bereitzustellen.
 
 ### 2. Login mit Google Cloud SDK/CLI
 
-Führe die notwendigen Login-Kommandos für die Google Cloud CLI aus:
+Führe die notwendigen Login-Kommandos für die Google Cloud CLI aus.
+
+> [!NOTE]
+> Die Warnung bei `gcloud auth application-default login` bezüglich des "Quota Project" werden
+> gleich adressiert und können vorerst ignoriert werden.
 
 ```bash
 gcloud auth login
 gcloud auth application-default login
-# Die Warnung bezüglich des "Quota Projekts" werden gleich adressiert und können ignoriert werden.
 ```
 
 ### 3. Infrastruktur mit Terraform bereitstellen
@@ -291,21 +295,20 @@ Auch andere Aktionen, wie das Löschung, Benachrichtigungen per E-Mail oder Chat
 
 ## Lokale Umgebung bauen
 
-Diese Demo kann selbst nachvollzogen und durchgearbeitet werden.
+Dieses Lab kann mit Docker selbst nachvollzogen und durchgearbeitet werden.
+Voraussetzung ist
 
-Voraussetzung ist:
+1. eine Installation von `docker` ([Installation](https://docs.docker.com/engine/install/)).
+2. ein Google Cloud Account
 
-- eine Installation von `docker` (empfohlen), wobei du den Schritten für eine [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker) folgen kannst
-- ein Google Cloud Account
-
-ODER
-
-- eine Installation von `terraform` ([Installation](https://developer.hashicorp.com/terraform/install))
-- ein Google Cloud Account
-- Google Cloud SDK/CLI
-- Installation von Python und Cloud Custodian (Paketnamen via PyPi `c7n` und `c7n-gcp`)
-
-In letzterem Fall begib dich ins Verzeichnis `03-cloud-custodian` und folge den Schritten in der [Durchführung](#durchführung-teil-1---on-demand).
+> [!NOTE]
+> Statt `docker` kann auch der Lab-Ordner direkt genutzt werden. In diesem Fall müssen die folgenden Tools
+> lokal installiert sein:
+>
+> 1. `terraform` ([Installation](https://developer.hashicorp.com/terraform/install))
+> 2. `gcloud`/Google Cloud SDK ([Installation](https://cloud.google.com/sdk/docs/install))
+> 3. Python
+> 4. **Cloud Custodian**, Installation via Python-Pakete `c7n` und `c7n-gcp`
 
 ### Lokale Umgebung mit Docker
 
@@ -318,23 +321,23 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `demos/03-cloud-custodian` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `labs/05-cloud-custodian` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/demos/03-cloud-custodian
+cd security-by-design/labs/05-cloud-custodian
 ```
 
 ```bash
 # Für diese Demo werden mehrere Tools vorbereitet - der Build-Prozess kann wenige Minuten dauern.
-docker build -t demos/03-cloud-custodian .
+docker build -t labs/05-cloud-custodian .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name cloud-custodian --hostname cloud-custodian demos/03-cloud-custodian
+docker run -it --name cloud-custodian --hostname cloud-custodian labs/05-cloud-custodian
 ```
 
 > [!NOTE]

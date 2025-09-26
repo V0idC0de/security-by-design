@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:1.13
+FROM hashicorp/terraform:1.13@sha256:dfb1889a8ee74ada3ddacc48f89b8a0d69f3e114de3d8a2ce15f6a8d3dbfdbe2
 
 # Installiere grundlegende Pakete
 RUN apk add --no-cache less nano vim bat busybox-extras shadow bash curl jq yq \
