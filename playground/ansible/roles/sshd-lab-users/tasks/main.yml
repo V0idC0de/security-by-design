@@ -1,0 +1,35 @@
+---
+- name: Ensure sshd_config.d directory exists
+  ansible.builtin.file:
+    path: "/etc/ssh/sshd_config.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Set force command line to block access
+  ansible.builtin.set_fact:
+    sshd_force_command_line: "echo {{ sshd_no_lab_message }}; exit 42"
+  when: not (sshd_container_name | default(false))
+
+- name: Set force command line to enter container
+  ansible.builtin.set_fact:
+    sshd_force_command_line: "sudo docker exec -it {{ sshd_container_name }} /bin/bash"
+  when: (sshd_container_name | default(false))
+
+
+- name: "Configure denying ForceCommand for {{ sshd_lab_user }}"
+  ansible.builtin.copy:
+    dest: "/etc/ssh/sshd_config.d/{{ sshd_lab_user }}.conf"
+    content: |
+      Match User {{ sshd_lab_user }}
+          ForceCommand {{ sshd_force_command_line }}
+          Subsystem sftp /bin/false
+          AllowTcpForwarding no
+          X11Forwarding no
+          AllowAgentForwarding no
+          PermitTunnel no
+    owner: root
+    group: root
+    mode: "0644"
+    notify: Restart sshd

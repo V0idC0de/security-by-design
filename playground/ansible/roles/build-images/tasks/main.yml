@@ -1,0 +1,58 @@
+---
+# tasks/main.yml for build-images role
+- name: Clone the GitHub repository
+  ansible.builtin.git:
+    repo: "{{ github_repo }}"
+    dest: "{{ repo_dest }}"
+    update: yes
+  register: repo_clone
+
+- name: Find Dockerfiles in target folders
+  ansible.builtin.find:
+    paths: "{{ repo_dest }}/{{ item }}"
+    patterns: Dockerfile
+    file_type: file
+    recurse: yes
+  loop: "{{ docker_parent_dirs }}"
+  register: dockerfile_search
+
+- name: List all Dockerfiles found
+  ansible.builtin.set_fact:
+    all_dockerfiles: "{{ dockerfile_search.results | map(attribute='files') | sum(start=[]) | map(attribute='path') | list }}"
+
+- name: Prepare image build info
+  with_items: "{{ all_dockerfiles }}"
+  ansible.builtin.set_fact:
+    images_to_build: >-
+      {{ 
+        images_to_build | default([]) + [ {
+          'path': item,
+          'parent_dir': item | dirname,
+          'image_name': ((item | dirname | dirname | basename) + '/' + (item | dirname | basename)) | lower
+        } ]
+      }}
+
+- name: Build Docker Images in parallel
+  loop: "{{ images_to_build }}"
+  loop_control:
+    label: "{{ item.image_name }}"
+  async: 600
+  poll: 0
+  community.docker.docker_image:
+    name: "{{ item.image_name }}"
+    tag: latest
+    source: build
+    build:
+      path: "{{ item.parent_dir }}"
+  register: build_jobs
+
+- name: Wait for all Docker image builds to finish
+  ansible.builtin.async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: build_results
+  until: build_results.finished
+  retries: 1
+  delay: 5
+  loop: "{{ build_jobs.results }}"
+  loop_control:
+    label: "{{ item.item.image_name }}"

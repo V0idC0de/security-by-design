@@ -1,0 +1,8 @@
+---
+# Users can only have one container per Lab.
+# Invoking this role with the same `container_image` and the same user in `container_users`,
+# the same Container will be considered.
+container_users: []
+container_image:
+# Options: present, started, stopped, absent, restarted
+container_state: started

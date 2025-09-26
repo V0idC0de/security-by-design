@@ -127,13 +127,13 @@ cd security-by-design/demos/02-open-policy-agent
 ```
 
 ```bash
-docker build -t demo/open-policy-agent .
+docker build -t demos/02-open-policy-agent .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name open-policy-agent --hostname open-policy-agent demo/open-policy-agent
+docker run -it --name open-policy-agent --hostname open-policy-agent demos/02-open-policy-agent
 ```
 
 > [!NOTE]

@@ -1,0 +1,13 @@
+lab_users:
+  - rat
+  - frog
+  - snek
+  
+# Name or part of the lab directory to host
+# lab_dir:
+
+# Whether to recreate existing containers
+# recreate: false
+
+# Whether to reset passwords for lab users to the configured default
+# reset_password: false

@@ -1,0 +1,26 @@
+---
+- name: Fail if container_state input is invalid
+  ansible.builtin.fail:
+    msg: "container_state must be one of: present, started, stopped, absent, restarted"
+  when: container_state not in ['present', 'started', 'stopped', 'absent', 'restarted']
+
+- name: Set container name for each lab user
+  set_fact:
+    container_names: >-
+      {{
+        container_names | default({}) | combine({
+          item: "lab-{}-{}".format(
+            item,
+            container_image.split('/')[1] if '/' in container_image else container_image
+          )
+        })
+      }}
+  loop: "{{ container_users }}"
+
+- name: "Set Containers for Lab {{ container_image }} to {{ container_state }}"
+  community.docker.docker_container:
+    name: "{{ item.value }}"
+    state: "{{ container_state }}"
+  loop: "{{ container_names | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
