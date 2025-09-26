@@ -2,11 +2,13 @@
 
 - [01 Terraform](#01-terraform)
   - [Durchführung](#durchführung)
-    - [1. GitHub Personal Access Token bereitstellen](#1-github-personal-access-token-bereitstellen)
-    - [2. Terraform Plan ausführen](#2-terraform-plan-ausführen)
+    - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
+    - [2. GitHub Personal Access Token bereitstellen](#2-github-personal-access-token-bereitstellen)
+    - [3. Terraform Plan ausführen](#3-terraform-plan-ausführen)
     - [3. Terraform mit Variablen-Datei ausführen](#3-terraform-mit-variablen-datei-ausführen)
     - [4. Repositories auf GitHub überprüfen](#4-repositories-auf-github-überprüfen)
     - [5. Weitere Dateien hinzufügen](#5-weitere-dateien-hinzufügen)
+    - [6. Default Branch ändern](#6-default-branch-ändern)
     - [7. Manuelle Änderungen und State Drift demonstrieren](#7-manuelle-änderungen-und-state-drift-demonstrieren)
     - [8. Idempotenz demonstrieren](#8-idempotenz-demonstrieren)
     - [9. Infrastruktur abbauen](#9-infrastruktur-abbauen)
@@ -19,7 +21,7 @@
       - [Existierenden Container verwenden](#existierenden-container-verwenden)
       - [Container löschen/zurücksetzen](#container-löschenzurücksetzen)
 
-In dieser Demo wird gezeigt, wie Terraform zur Verwaltung von GitHub-Repositories eingesetzt werden kann. Mit Terraform können wir Ressourcen wie **Repositories**, **Einstellungen** und **Dateien** innerhalb dieser Repositories basierend auf **Input-Variablen** erstellen und verwalten.
+In diesem Lab wird gezeigt, wie Terraform zur Verwaltung von GitHub-Repositories eingesetzt werden kann. Mit Terraform können wir Ressourcen wie **Repositories**, **Einstellungen** und **Dateien** innerhalb dieser Repositories basierend auf **Input-Variablen** erstellen und verwalten.
 
 Wir werden schrittweise die Terraform-Konfiguration erweitern, um zu zeigen, wie Terraform auf Änderungen reagiert, diese plant und umsetzt. Außerdem werden wir demonstrieren, was passiert, wenn manuelle Änderungen außerhalb von Terraform vorgenommen werden (**"State Drift"**) und wie Terraform darauf reagiert.
 
@@ -29,9 +31,22 @@ Wir werden schrittweise die Terraform-Konfiguration erweitern, um zu zeigen, wie
 
 ## Durchführung
 
-Die folgenden Schritte gehen davon aus, dass du dich im Verzeichnis `01-terraform/workspace` befindest.
+Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befindet (bereitgestellte Umgebung oder lokal ausgeführter Container).
 
-### 1. GitHub Personal Access Token bereitstellen
+### 1. Betrachte das Setup im Container
+
+```bash
+# Dateien auflisten
+tree
+
+# Wechsel ins Verzeichnis mit dem Terraform Code
+cd terraform
+```
+
+### 2. GitHub Personal Access Token bereitstellen
+
+Da dieses Labor mit GitHub interagiert, wird ein Personal Access Token benötigt.
+Falls du keines mit ausreichenden Berechtigungen besitzt, folge den Anweisungen [hier](/GitHub-PAT.md).
 
 ```bash
 # Erstelle eine Kopie der Sample-Datei ohne .sample-Erweiterung
@@ -39,6 +54,7 @@ cp github-pat.auto.tfvars.json.sample github-pat.auto.tfvars.json
 
 # Bearbeite die Datei, um deinen GitHub PAT einzufügen
 nano github-pat.auto.tfvars.json
+# Speichern und schließen mit Strg+S (speichern), dann Strg+X (verlassen)
 ```
 
 > [!NOTE]
@@ -51,7 +67,7 @@ nano github-pat.auto.tfvars.json
 > sodass keine versehentlichen Commits mit sensiblen Datein passieren.
 > Einzige Ausnahme von der `.gitignore` sind die `sample.*.tfvars.json` Dateien, die später verwendet werden.
 
-### 2. Terraform Plan ausführen
+### 3. Terraform Plan ausführen
 
 ```bash
 # Initialisiere das Repository einmalig
@@ -66,16 +82,15 @@ terraform plan
 > Bei interaktiver Nutzung ist das praktisch, doch in einer automatisierten Umgebung
 > wie einer GitHub-Pipeline wäre dies problematisch.
 >
-> Breche diesen Befehl mit CTRL+C ab.
+> Breche diesen Befehl mit `CTRL + C` ab.
 
 ```bash
 # Führe Terraform Plan mit dem Argument aus, das interaktive Eingaben verhindert
 terraform plan -input=false
 ```
 
-> [!NOTE]
-> Beachte, wie Terraform sofort fehlschlägt, ohne nach Variablen zu fragen.
-> So würde Terraform in einer automatisierten Umgebung typischerweise ausgeführt werden.
+Durch `-input=false` schlägt Terraform sofort fehl, ohne nach Variablen zu fragen, wenn eine fehlt.
+So würde Terraform in einer automatisierten Umgebung typischerweise ausgeführt werden.
 
 ### 3. Terraform mit Variablen-Datei ausführen
 
@@ -95,10 +110,9 @@ grep -F -C 5 'var.' *.tf
 terraform plan -var-file inputs/sample.1.tfvars.json
 ```
 
-> [!NOTE]
-> Beachte die Namen für jede Ressource und welche Werte aus den Variablen stammen.
-> Die Ressourcen bei denen `for_each` genutzt wird, werden als Map angelegt, deren `key`s
-> auf dem Wert von `for_each` basieren.
+Beachte die Namen für jede Ressource und welche Werte aus den Variablen stammen.
+Die Ressourcen bei denen `for_each` genutzt wird, werden als Map angelegt, deren `key`s
+auf dem Wert von `for_each` basieren.
 
 ```bash
 # Wende die Konfiguration an.
@@ -126,11 +140,11 @@ wo die URLs der Repositories schnell einsehbar sind.
 diff inputs/sample.1.tfvars.json inputs/sample.2.tfvars.json
 
 terraform apply -var-file inputs/sample.2.tfvars.json
+```
 
-> [!NOTE]
-> Beachte, dass keine bestehenden Ressourcen geändert werden, da Terraform keinen Grund dafür sieht.
-> Nur die Dateien, die hinzugefügt werden sollen, sind im Plan gelistet.
-> Terraform ermittelt diese Unterschiede selbstständig.
+Beachte, dass keine bestehenden Ressourcen geändert werden, da Terraform keinen Grund dafür sieht.
+Nur die Dateien, die hinzugefügt werden sollen, sind im Plan gelistet.
+Terraform ermittelt diese Unterschiede selbstständig.
 
 ### 6. Default Branch ändern
 
@@ -138,16 +152,15 @@ terraform apply -var-file inputs/sample.2.tfvars.json
 terraform plan -var-file inputs/sample.3.tfvars.json
 ```
 
-> [!NOTE]
-> Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
+Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
 
 > [!NOTE]
 > Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
 > sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
 
 > [!WARNING]
-> Die Dateien, die im Repository erstellt werden, ändern den Branch, auf dem sie angelegt sind.
-> Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieden - sie sind **Immutable**.
+> Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
+> Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieben - sie sind **immutable**.
 > Terraform kommentiert das mit **"forces replacement"** und zeigt damit an, dass diese Dateiobjekte zerstört
 > und neu erstellt werden müssen, um den Zielzustand zu erreichen.
 > Eine Ressource, die zerstört und neu erstellt wird, ist eine potenziell destruktive Aktion und sollte mit Vorsicht durchgeführt werden.
@@ -213,17 +226,13 @@ Terraform schließt diese Lücke durch eine zentrale und überprüfbare Verwaltu
 
 ## Lokale Umgebung bauen
 
-Diese Demo kann selbst nachvollzogen und durchgearbeitet werden.
+Dieses Lab kann mit Docker selbst nachvollzogen und durchgearbeitet werden.
+Voraussetzung ist
 
-Voraussetzung ist:
-
-- eine Installation von `docker` (empfohlen), wobei du den Schritten für eine [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker) folgen kannst
-
-ODER
-
-- eine Installation von `terraform` ([Installation](https://developer.hashicorp.com/terraform/install))
-- ein GitHub Account
-- ein GitHub Personal Access Token (siehe Beschreibung der Variable in `variables.token.tf`)
+1. eine Installation von `docker` ([Installation](https://docs.docker.com/engine/install/)).
+   1. Alternativ kann auch der Lab-Ordner direkt genutzt werden, wobei `terraform` ([Installation](https://developer.hashicorp.com/terraform/install)) installiert sein muss
+2. ein GitHub Account
+3. ein GitHub Personal Access Token (siehe [GitHub PAT](/GitHub-PAT.md))
 
 ### Lokale Umgebung mit Docker
 
@@ -236,22 +245,22 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `demos/01-terraform` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `labs/03-terraform` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/demos/01-terraform
+cd security-by-design/labs/03-terraform
 ```
 
 ```bash
-docker build -t demos/01-terraform .
+docker build -t demos/03-terraform .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name terraform --hostname terraform demos/01-terraform
+docker run -it --name terraform --hostname terraform labs/03-terraform
 ```
 
 > [!NOTE]
