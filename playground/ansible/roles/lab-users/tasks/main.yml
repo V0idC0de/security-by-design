@@ -1,0 +1,11 @@
+---
+- name: Ensure lab users exist with password same as username
+  become: true
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password: "{{ item | password_hash('sha512') }}"
+    update_password: "{{ 'always' if reset_password else 'on_create' }}"
+    state: present
+    shell: /bin/bash
+  loop: "{{ lab_users }}"
+  register: lab_os_users
