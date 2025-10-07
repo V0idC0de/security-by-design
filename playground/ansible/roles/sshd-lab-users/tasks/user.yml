@@ -1,0 +1,42 @@
+---
+- name: Ensure sshd_config.d directory exists
+  ansible.builtin.file:
+    path: "/etc/ssh/sshd_config.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Set force command line to block access
+  ansible.builtin.set_fact:
+    sshd_force_command_line: "echo {{ sshd_no_lab_message }}; exit 42"
+  when: (sshd_container_name | default("", true) | length == 0)
+
+- name: Set force command line to enter container
+  ansible.builtin.set_fact:
+    sshd_force_command_line: "sudo /usr/bin/docker exec -it {{ sshd_container_name }} /bin/bash"
+  when: (sshd_container_name | default("", true) | length > 0)
+
+- name: "Configure denying ForceCommand for {{ user }}"
+  ansible.builtin.copy:
+    dest: "/etc/ssh/sshd_config.d/{{ lab_user_filename_prefix | default('', true) }}{{ user }}.conf"
+    content: |
+      Match User {{ user }}
+          ForceCommand {{ sshd_force_command_line }}
+          Subsystem sftp /bin/false
+          AllowTcpForwarding no
+          X11Forwarding no
+          AllowAgentForwarding no
+          PermitTunnel no
+          PasswordAuthentication yes
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart sshd
+
+- name: Configure sudoers
+  include_tasks: sudoers.yml
+  vars:
+    command: "{{ sshd_force_command_line.split('sudo ')[1:] if sshd_force_command_line.startswith('sudo ') else '' }}"
+    file_prefix: "{{ lab_user_filename_prefix | default('', true) }}"
+    sudoer: "{{ user }}"

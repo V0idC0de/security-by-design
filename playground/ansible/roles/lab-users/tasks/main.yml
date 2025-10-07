@@ -9,3 +9,13 @@
     shell: /bin/bash
   loop: "{{ lab_users }}"
   register: lab_os_users
+
+- name: Set fact with names of created/modified users
+  ansible.builtin.set_fact:
+    lab_os_users_changed: >-
+      {{
+        lab_os_users.results 
+        | selectattr('changed', 'equalto', true) 
+        | map(attribute='name') 
+        | list 
+      }}
