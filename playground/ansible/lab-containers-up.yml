@@ -10,27 +10,27 @@
 
   vars_prompt:
     - name: lab_dir
-      prompt: "Enter the lab directory name (or part of it):"
+      prompt: "Enter the lab directory name (or part of it)"
       private: no
 
   vars:
+    # "recreate" must be explicitly set with "-e recreate=true", as it's destructive.
     recreate: false
-    lab_users: "{{ lab_users | default([]) }}"
+    lab_users: "{{ lab_users | default([], true) }}"
 
   tasks:
     - name: Gather Docker images info
       community.docker.docker_image_info:
-        name: "labs/*"
       register: image_info
 
     - name: Filter images containing lab_dir (case-insensitive)
       ansible.builtin.set_fact:
         filtered_images: >-
           {{
-            image_info.images
-            | selectattr('RepoTags', 'defined')
-            | selectattr('RepoTags', '!=', None)
-            | selectattr('RepoTags', 'search', lab_dir, ignorecase=True)
+            image_info.images 
+            | map(attribute='RepoTags') 
+            | flatten 
+            | select('search', lab_dir) 
             | list
           }}
 
@@ -41,30 +41,21 @@
           Please refine your input.
       when: filtered_images | length != 1
 
-    - name: Remove Lab Containers if recreate is request
-      ansible.builtin.include_role:
-        name: lab-user-containers
-      vars:
-        container_users: "{{ lab_users }}"
-        container_image: "{{ filtered_images[0].RepoTags[0] }}"
-        container_state: "absent"
-      when: recreate | bool
-
     - name: Start Lab Containers
       ansible.builtin.include_role:
         name: lab-user-containers
       vars:
         container_users: "{{ lab_users }}"
-        container_image: "{{ filtered_images[0].RepoTags[0] }}"
+        container_image: "{{ filtered_images | first }}"
         container_state: "started"
+        recreate: "{{ recreate | bool }}"
 
     - name: Set SSH command for users
       ansible.builtin.include_role:
         name: sshd-lab-users
       vars:
-        sshd_lab_user: "{{ item }}"
-        sshd_container_name: "{{ 'lab-' + (sshd_lab_user) + '-' + (container_state) }}"
-
+        sshd_lab_user: "{{ item.key }}"
+        sshd_container_name: "{{ item.value | split(':') | join('-') }}"
       loop: "{{ container_names | dict2items }}"
       loop_control:
         label: "{{ item.key }}"
