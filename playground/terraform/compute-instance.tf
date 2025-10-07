@@ -21,7 +21,7 @@ resource "google_compute_instance" "container-host" {
   }
   deletion_protection       = false
   allow_stopping_for_update = true
-  desired_status            = "RUNNING"
+  desired_status            = upper(var.machine_state)
 
   machine_type = var.machine.type
   # FQDN hostname - may require DNS to be set up first?

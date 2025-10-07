@@ -49,3 +49,15 @@ variable "machine" {
   nullable = false
   default  = {}
 }
+
+variable "machine_state" {
+  description = "The desired state of the machine after creation. Can be 'RUNNING', 'SUSPENDED', or 'TERMINATED'."
+  type        = string
+  nullable    = false
+  default     = "RUNNING"
+
+  validation {
+    condition     = contains(["RUNNING", "SUSPENDED", "TERMINATED"], upper(var.machine_state))
+    error_message = "The machine_state must be either 'RUNNING', 'SUSPENDED', or 'TERMINATED'."
+  }
+}
