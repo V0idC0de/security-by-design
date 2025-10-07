@@ -321,23 +321,23 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `labs/05-cloud-custodian` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `demos/05-cloud-custodian` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/labs/05-cloud-custodian
+cd security-by-design/demos/05-cloud-custodian
 ```
 
 ```bash
 # Für diese Demo werden mehrere Tools vorbereitet - der Build-Prozess kann wenige Minuten dauern.
-docker build -t labs/05-cloud-custodian .
+docker build -t demos/05-cloud-custodian .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name cloud-custodian --hostname cloud-custodian labs/05-cloud-custodian
+docker run -it --name cloud-custodian --hostname cloud-custodian demos/05-cloud-custodian
 ```
 
 > [!NOTE]
