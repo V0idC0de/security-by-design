@@ -1,0 +1,1 @@
+${ip_address} ansible_user="${ansible_user}" ansible_ssh_private_key_file="${priv_path}" ansible_ssh_common_args='-F ${ssh_config_path} -o StrictHostKeyChecking=no'
