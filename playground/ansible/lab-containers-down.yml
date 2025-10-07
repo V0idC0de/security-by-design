@@ -8,38 +8,30 @@
   vars_files:
     - vars/settings.yaml
 
-  pre_tasks:
-    - name: Set default for lab_users if not defined
-      set_fact:
-        lab_users: []
-      when: lab_users is not defined
+  vars:
+    # Override with "-e delete_containers=true" to destroy all lab containers.
+    delete_containers: false
+    lab_users: "{{ lab_users | default([], true) }}"
 
   tasks:
-    - name: Get list of containers for each lab user
-      community.docker.docker_container_info:
-        name: "lab-{{ item }}-*"
-      loop: "{{ lab_users }}"
-      register: container_info
+    - name: Get all Docker container names (including stopped)
+      ansible.builtin.shell: !unsafe "docker ps -a --format '{{.Names}}'"
+      changed_when: false
+      register: all_container_names
 
-    - name: Combine all container names into one list
+    - name: Filter container names starting with "lab-"
       set_fact:
-        container_names: >-
-          {{
-          container_info.results
-          | map(attribute='containers')
-          | flatten
-          | map(attribute='Name')
-          | list
-          }}
+        container_names: "{{ all_container_names.stdout_lines | select('match', '^lab-') | list }}"
 
     - name: Stop Lab Containers
       community.docker.docker_container:
         name: "{{ item }}"
-        state: stopped
+        state: "{{ 'absent' if delete_containers | bool else 'stopped' }}"
+        force_kill: true
       loop: "{{ container_names }}"
 
     - name: Block SSH access for users
       ansible.builtin.include_role:
-        name: sshd-user-no-lab
+        name: sshd-lab-users
       vars:
-        sshd_no_lab_users: "{{ lab_users }}"
+        sshd_lab_users: "{{ lab_users }}"

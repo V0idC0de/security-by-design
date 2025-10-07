@@ -9,9 +9,23 @@
     container_names: >-
       {{
         container_names | default({}) | combine({
-          item: "lab-{}-{}".format(
+          item: 'lab-{}-{}'.format(
             item,
-            container_image.split('/')[1] if '/' in container_image else container_image
+            (container_image | regex_search("\/?([^:\/]+):?[\w\.\-]*$", "\1") | first)
+          )
+        })
+      }}
+  loop: "{{ container_users }}"
+
+- name: Set container hostnames for each lab user
+  set_fact:
+    container_hostnames: >-
+      {{
+        container_names | default({}) | combine({
+          item: (
+            container_image 
+            | regex_search("\/?([^:\/]+):?[\w\.\-]*$", "\1")
+            | first
           )
         })
       }}
@@ -20,7 +34,16 @@
 - name: "Set Containers for Lab {{ container_image }} to {{ container_state }}"
   community.docker.docker_container:
     name: "{{ item.value }}"
+    image: "{{ container_image }}"
     state: "{{ container_state }}"
+    hostname: "{{ container_hostnames[item.key] }}"
+    # Start Containers with "sleep infinity" to keep them running but idle.
+    # Lab users are able to "docker exec" into their Containers.
+    entrypoint:
+      - sleep
+      - infinity
+    # Faster exits, if stops are required.
+    force_kill: true
   loop: "{{ container_names | dict2items }}"
   loop_control:
-    label: "{{ item.key }}"
+    label: "{{ item.key }} ({{ item.value }})"
