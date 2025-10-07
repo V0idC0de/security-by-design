@@ -11,3 +11,6 @@ lab_users:
 
 # Whether to reset passwords for lab users to the configured default
 # reset_password: false
+
+# Whether to set up sshd access for lab users
+# force_sshd_configuration: true

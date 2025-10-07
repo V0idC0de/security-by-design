@@ -1,0 +1,12 @@
+- name: Set sudoers file prefix
+  ansible.builtin.set_fact:
+    sudoers_file: "{{ file_prefix | default('', true) }}{{ sudoer }}"
+
+- name: Configure sudoers for {{ sudoer }} to allow Container access
+  community.general.sudoers:
+    name: "{{ sudoers_file }}"
+    user: "{{ sudoer }}"
+    commands: "{{ command }}"
+    nopassword: true
+    validation: required
+    state: "{{ 'present' if command | length > 0 else 'absent' }}"
