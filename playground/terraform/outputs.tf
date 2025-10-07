@@ -29,12 +29,12 @@ resource "local_file" "outputs_yaml" {
 }
 
 resource "local_file" "ansible_inventory" {
-  content = join(" ", [
-    local.outputs.public_ip,
-    "ansible_user=${local.outputs.initial_user}",
-    "ansible_ssh_private_key_file=${local.outputs.ssh.priv_path}",
-    "ansible_ssh_common_args='-F ${local.ssh.config_path} -o StrictHostKeyChecking=no'",
-  ])
+  content = templatefile("${path.module}/ansible-inventory.tpl", {
+    ip_address      = local.outputs.public_ip,
+    ansible_user    = local.outputs.initial_user,
+    priv_path       = local.outputs.ssh.priv_path,
+    ssh_config_path = local.outputs.ssh.config_path,
+  })
   filename        = local.outputs.inventory_path
   file_permission = "0600"
 }
