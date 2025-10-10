@@ -16,7 +16,7 @@
     - [Existierenden Container verwenden](#existierenden-container-verwenden)
     - [Container löschen/zurücksetzen](#container-löschenzurücksetzen)
 
-In diesem Labor wird ein Beispiel-Repository mit Python- und YAML-Code bereitgestellt, der absichtlich Formatierungsfehler und Klartext-Secrets im Quellcode enthält.
+In diesem Lab wird ein Beispiel-Repository mit Python- und YAML-Code bereitgestellt, der absichtlich Formatierungsfehler und Klartext-Secrets im Quellcode enthält.
 Ziel des Labs ist es, verschiedene Tools wie einen Code-Linter, einen YAML- und Python-Formatter sowie einen Secret Scanner für Git-Repositories einzusetzen, um diese Probleme zu erkennen.
 
 Die Tools werden über eine pre-commit-Konfigurationsdatei (`.pre-commit-config.yaml`) eingebunden, sodass sie bei jedem Commit automatisch ausgeführt werden.
@@ -174,12 +174,12 @@ git clone https://github.com/V0idC0de/security-by-design.git
 ### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `labs/01-pre-commit` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `labs/02-pre-commit` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/labs/01-pre-commit
+cd security-by-design/labs/02-pre-commit
 ```
 
 ```bash
@@ -189,7 +189,7 @@ docker build -t labs/pre-commit-hooks .
 ### 3. Starten des Containers
 
 ```bash
-docker run -it --name pre-commit --hostname pre-commit labs/01-pre-commit
+docker run -it --name pre-commit --hostname pre-commit labs/02-pre-commit
 ```
 
 > [!NOTE]
