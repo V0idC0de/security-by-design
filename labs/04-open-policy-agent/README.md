@@ -8,6 +8,7 @@
     - [4. Repository und Pull Request öffnen](#4-repository-und-pull-request-öffnen)
     - [5. GitHub Workflow beobachten](#5-github-workflow-beobachten)
     - [6. Analyse der Policy-Verletzungen](#6-analyse-der-policy-verletzungen)
+    - [7. Aufräumen](#7-aufräumen)
     - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
     - [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker)
@@ -53,9 +54,8 @@ nano github-pat.auto.tfvars.json
 # Speichern und schließen mit Strg+S (speichern), dann Strg+X (verlassen)
 ```
 
-> [!NOTE]
-> `.auto.tfvars` Dateien werden von Terraform bei jedem Lauf automatisch eingelesen.
-> Das ist hier praktisch, da das GitHub-Token immer erforderlich ist.
+`*.auto.tfvars` Dateien werden von Terraform bei jedem Lauf automatisch eingelesen.
+Das ist hier praktisch, da das GitHub-Token bei jeder Ausführung erforderlich ist.
 
 > [!WARNING]
 > Derartige Secrets sollten nicht in ein Repository committet werden.
@@ -78,13 +78,14 @@ terraform apply
 
 > [!WARNING]
 > Das **Personal Access Token**, das Terraform in diesem Aufbauschritt zur Verfügung gestellt wird,
-> wird im erstellten Repository als Secret gespeichert, um es später für die GitHub Workflows zu nutzen.
+> wird im erstellten Repository als [GitHub Secret](https://docs.github.com/en/actions/concepts/security/secrets)
+> gespeichert, um es später für die GitHub Workflows zu nutzen.
 > Zwar lassen sich Secrets nicht von Personen mit Lesezugriff auslesen, doch wer Schreibzugriff auf
 > das Repository hat, kann Workflows nutzen, um das Token im Klartext zu erlangen.
 >
 > Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
 > Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
-> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist.
+> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 7](#7-aufräumen)).
 
 Nach erfolgreichem `terraform apply` findest du im Terraform Output die URL zum neuen Repository sowie einen direkten Link zur Pull-Request-Erstellung. Mit `terraform output` kommst du schnell an die Outputs.
 
@@ -100,7 +101,7 @@ Erstelle im Repository einen Pull Request, um z.B. den Branch `feature/add-setti
 ### 5. GitHub Workflow beobachten
 
 Klicke am unteren Ende des Pull Requests auf den aktiven **Workflow Run** und beobachte die Ausführung des Workflows.
-Der Workflow führt einen `terraform plan` aus und prüft das Ergebnis mit **Open Policy Agents** `conftest` gegen die im Repository abgelegten Policies (siehe `/policy/*.rego`).
+Der Workflow führt einen `terraform plan` aus und prüft das Ergebnis mit **Open Policy Agent** `conftest` gegen die im Repository abgelegten Policies (siehe `/policy/*.rego`).
 
 > [!WARNING]
 > Der Workflow wird fehlschlagen, wenn geplante Änderungen gegen eine Policy verstoßen.
@@ -114,9 +115,18 @@ Am oberen Ende des **Workflow Runs** des Logs werden **Annotationen** angezeigt,
 > Der Schritt `terraform plan` war erfolgreich, aber die Policy-Prüfung ist fehlgeschlagen.
 > So werden unerwünschte Änderungen frühzeitig erkannt und blockiert, selbst wenn der `terraform plan` an an sich gültig ist.
 
+### 7. Aufräumen
+
+Um kein verwaistes Repository zurückzulassen, räume die Ressourcen wieder auf, indem du das folgende Kommando im `terraform`-Ordner ausführst:
+
+```bash
+terraform destroy
+```
+
 ### Abschluss
 
-In dieser Demo wurde gezeigt, wie sich Terraform-Pläne mit Open Policy Agent und `conftest` automatisiert auf Policy-Konformität prüfen lassen. So können Teams sicherstellen, dass auch technisch korrekte, aber aus Compliance-Sicht unerwünschte Änderungen nicht versehentlich übernommen werden.
+In dieser Demo wurde gezeigt, wie sich Terraform-Pläne mit Open Policy Agent und `conftest` automatisiert auf Policy-Konformität prüfen lassen.
+So können Teams sicherstellen, dass auch technisch korrekte, aber aus Compliance-Sicht unerwünschte Änderungen nicht versehentlich übernommen werden.
 
 ## Lokale Umgebung bauen
 
