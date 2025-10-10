@@ -1,16 +1,13 @@
 name: Repository Content CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
     types:
       - opened
       - synchronize
-    
+
   workflow_dispatch:
 
 jobs:
@@ -19,10 +16,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@main
         with:
-          scan: head
+          fetch-depth: 0 # Fetch all history for accurate scanning
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@v3.90.8
+        with:
+          version: "3.90.8"
+          base: "${{ github.event.repository.default_branch }}"
+          extra_args: --results=verified,unknown
 
   format:
     name: Format Check (Python & YAML)
