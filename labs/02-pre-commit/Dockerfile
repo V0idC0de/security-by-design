@@ -2,7 +2,7 @@ FROM python:3.12.2-slim-bookworm@sha256:5dc6f84b5e97bfb0c90abfb7c55f3cacc2cb6687
 
 # Installiere git und weitere benötigte Tools
 RUN apt-get update && \
-    apt-get install -y git nano vim tree bat && \
+    apt-get install -y git nano vim tree bat bash-completion && \
     rm -rf /var/lib/apt/lists/*
 
 # Erstelle einen nicht-root Benutzer

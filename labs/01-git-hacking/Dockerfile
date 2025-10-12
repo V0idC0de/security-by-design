@@ -7,7 +7,7 @@ ARG WEBSERVER_PATH=/lab-webserver
 
 # Installiere git und weitere benötigte Tools
 RUN apt-get update && \
-    apt-get install -y git nano vim bat jq curl wget && \
+    apt-get install -y git nano vim bat jq curl wget bash-completion && \
     rm -rf /var/lib/apt/lists/*
 
 COPY lab-webserver $WEBSERVER_PATH
