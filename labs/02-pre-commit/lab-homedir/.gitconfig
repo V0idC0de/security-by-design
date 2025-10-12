@@ -3,3 +3,5 @@
 [user]
   email = labuser@pre-commit.lab
   name = labuser
+[push]
+  autoSetupRemote = true
