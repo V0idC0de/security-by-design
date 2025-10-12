@@ -20,9 +20,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && chown -R $USERNAME:$USERNAME /home/$USERNAME $WEBSERVER_PATH
 
-# Füge einen Eintrag in /etc/hosts hinzu, damit victim.com auf localhost zeigt - reine Ästhetik
-RUN echo "127.0.0.1 victim.com" >> /etc/hosts
-
 USER $USERNAME
 # Setze $PATH, sodass pip-Tools (hier "pre-commit") korrekt gefunden werden
 ENV PATH="$PATH:/home/$USERNAME/.local/bin"

