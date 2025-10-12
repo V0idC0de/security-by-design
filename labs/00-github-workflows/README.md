@@ -3,22 +3,22 @@
 - [00 GitHub Workflows](#00-github-workflows)
   - [Durchführung](#durchführung)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
-    - [2. Repository erstellen](#2-repository-erstellen)
-      - [2.1. GitHub-Token konfigurieren](#21-github-token-konfigurieren)
-      - [2.2. Terraform ausführen](#22-terraform-ausführen)
-    - [3. Repository und Workflows überprüfen](#3-repository-und-workflows-überprüfen)
-    - [4. Pull Request erstellen](#4-pull-request-erstellen)
-    - [5. GitHub Actions beobachten](#5-github-actions-beobachten)
-    - [6. Pull Request mergen](#6-pull-request-mergen)
-    - [7. Aufräumen](#7-aufräumen)
+    - [2. GitHub CLI Login](#2-github-cli-login)
+    - [3. Repository erstellen](#3-repository-erstellen)
+    - [4. Repository und Workflows überprüfen](#4-repository-und-workflows-überprüfen)
+    - [5. Neuen Branch pushen](#5-neuen-branch-pushen)
+    - [6. Pull Request erstellen](#6-pull-request-erstellen)
+    - [7. GitHub Actions beobachten](#7-github-actions-beobachten)
+    - [8. Fehlschlag auslösen](#8-fehlschlag-auslösen)
+    - [9. Formatting-Workflow beobachten](#9-formatting-workflow-beobachten)
+    - [10. Aufräumen](#10-aufräumen)
     - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
-    - [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker)
-      - [1. Klone das Repository](#1-klone-das-repository)
-      - [2. Baue den Container](#2-baue-den-container)
-      - [3. Starten des Containers](#3-starten-des-containers)
-      - [Existierenden Container verwenden](#existierenden-container-verwenden)
-      - [Container löschen/zurücksetzen](#container-löschenzurücksetzen)
+    - [1. Klone das Repository](#1-klone-das-repository)
+    - [2. Baue den Container](#2-baue-den-container)
+    - [3. Starten des Containers](#3-starten-des-containers)
+    - [Existierenden Container verwenden](#existierenden-container-verwenden)
+    - [Container löschen/zurücksetzen](#container-löschenzurücksetzen)
 
 In diesem Lab wird gezeigt, Arbeitsaufläuge in GitHub-Repositories mit integrierten **GitHub Workflows** automatisiert werden können,
 um z.B. Secrets, potenziell gefährlichen Code und Formatierungsfehler zu finden, bevor sie in einen produktiven Branch gelangen.
@@ -33,134 +33,206 @@ Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befind
 
 ### 1. Ordnerstruktur und Vorbereitung
 
-Untersuche den aktuellen Ordner und beachte den Unterordner `terraform`.
-Wechsle zur Vorbereitung in den `terraform` Ordner.
+Untersuche den aktuellen Ordner und beachte den Unterordner `demo-workflows`.
+Wechsle zur Vorbereitung in den `demo-workflows` Ordner und wirf einen Blick auf die vorbereiteten Dateien.
 
 ```bash
 ls -l
-cd terraform
+cd demo-workflows
+# Zeige gesamte Ordnerstruktur
+tree -a demo-workflows
 ```
 
-### 2. Repository erstellen
+Diese Dateien werden gleich schrittweise als Commits in ein Git-Repository geschrieben.
 
-Für ein möglichst einfaches Setup wird in diesem Lab **Terraform** eingesetzt, um das Repository und alle Einstellungen
-automatisiert aufzusetzen. Wie **Terraform** genau funktioniert, wird in anderen Labs beleuchtet.
-Für dieses Lab genügt es zu wissen, dass die folgenden Schritte durchgeführt werden:
+### 2. GitHub CLI Login
 
-1. GitHub-Token zur Durchführung von Schritten im eigenen GitHub-Konto wird konfiguriert
-2. Terraform wird ausgeführt, was die folgenden Dinge automatisch tut
-   1. Repository wird erstellt
-   2. Dateien werden im Repository platziert
-   3. Neuer Branch mit einer neuen Datei wird erstellt
-
-#### 2.1. GitHub-Token konfigurieren
-
-Falls du noch kein GitHub-Token für die Durchführung von Labs hast, folge den Schritten in [GitHub PAT erstellen](/GitHub-PAT.md),
-um eines zu erzeugen. Lege es dann mit den folgenden Schritten in der Laborumgebung ab.
+Um Aktionen auf GitHub via CLI durchzuführen, melde dich bei deinem GitHub Account an.
 
 ```bash
-cp github-pat.auto.tfvars.json.sample github-pat.auto.tfvars.json
-nano github-pat.auto.tfvars.json
+# delete_repo ist als zusätzliche Berechtigung nötig, um am Ende aufzuräumen
+gh auth login -s delete_repo
 ```
 
-Trage das Token als Wert für das JSON-Feld ein, speichere mit `Strg + S` und verlasse den Editor mit `Strg + X`
-(andere Editoren können natürlich auch genutzt werden).
+Wähle der Reihe nach die Optionen:
 
-#### 2.2. Terraform ausführen
+1. `GitHub.com`
+2. `HTTPS` auf die Frage der Verbindungsart (außer du weißt, was du tust und möchtest lieber `SSH`)
+3. `Y` auf die Frage "Authenticate Git with your GitHub Credentials"
+4. `Login with web browser` auf die Frage, welche Anmeldemethode genutzt werden soll
 
-Führe die folgenden Kommandos aus, um Terraform vorzubereiten und das Repository aufbauen zu lassen:
+Kopiere den gezeigten Code, der in etwa so aussieht: `ABCD-EFGH`
+Drücke `ENTER`, um zu versuchen die Website zur Anmeldung zu öffnen.
+In der Laborumgebung bzw. innerhalb von Docker wird dies fehlschlagen.
+Es per `ENTER` zu versuchen ist trotzdem nötig.
+
+Besuche anschließend die gezeigte Adresse manuell.
+Melde dich ggf. bei GitHub an, trage den Code auf der Website ein und bestätige die Anmeldung.
+
+GitHub CLI ist jetzt einsatzbereit. Dieser Schritt muss üblicherweise nicht wiederholt werden,
+bzw. nur dann, wenn die GitHub CLI explizit dazu auffordert.
+
+### 3. Repository erstellen
 
 ```bash
-terraform init
-terraform apply
+cd demo-workflows
+# Lokales Git Repository initialisieren
+git init
+# Ersten Commit ins Repository schreiben
+git add sample.yaml .github/workflows/ci.yml
+git commit -m "Initial Commit"
+# Lokales Repository auf GitHub schreiben
+gh repo create --private --source . --push
 ```
 
-Bestätige die geplanten Änderungen von Terraform mit `yes`.
+Folgt dem Link im angezeigten Text, um schnell zum erstellen Repository zu gelangen.
+
+### 4. Repository und Workflows überprüfen
+
+Navigiere zu deinem neu erstellten Repository und sieh dir die Struktur des Repositories an.
+Anschließend, sieh dir den GitHub Workflow genauer er, der in `.github/workflows/ci.yml` konfiguriert ist.
+Dieser Workflow wird ausgeführt, wenn ein neuer Pull Request im Repository geöffnet oder geupdated wird
+(siehe Objekt `on:`).
+
+In jedem Schritt des Workflows geben die Zeilen mit `run:` oder `uses:` an, welche Aktivität durchzuführen ist.
+`run:` führt ein Kommendo in einer Shell direkt aus und `uses:` importiert eine fertige Aktion und führt sie aus,
+wobei diese Action-Namen schlicht Repositories auf GitHub sind.
+
+- **(Optional)** Versuche zu ermitteln, was diese einzelnen Schritte tun und welchen Zweck sie erfüllen.
 
 > [!NOTE]
-> Terraform erstellt ein neues Repository in deinem GitHub-Account mit Beispieldateien und einem Workflow.
-> Die Repository-Inhalte werden aus dem `repository-content/` Verzeichnis übernommen.
+> Workflows werden inzwischen in vielen Plattformen in einfachen Konfigurationsdateien (oft in YAML) gespeichert.
+> Das macht sie einfach als Teil des Repositories versionierbar.
+> Diese Workflows können meist von vielen Dingen ausgelöst werden. Manuell, zeitgesteuert oder bei Events wie
+> neuen Commits, Pull Requests, Releases, uvm. Somit lassen sich repetitive Aufgaben gut automatisieren.
 
-Bei einem Fehler, wende ggf. folgenden Fix an.
+### 5. Neuen Branch pushen
 
-> [!ERROR]
-> Der Fehler `Error: Provider produced inconsistent final plan` kann, sollte er auftreten, wahrscheinlich durch erneutes Ausführen von `terraform apply`
-> behoben werden. Möglicherweise wurde das Repository nach der Löschung zu schnell wieder erstellt.
+Füge dem Repository neue Inhalte hinzu, um einen Pull Request zu erstellen.
+Erstelle dazu einen neuen Branch `add-python` und committe `sample.py`.
 
-### 3. Repository und Workflows überprüfen
+```bash
+git checkout -b add-python
+git add sample.py
+git commit -m "Python Code"
+```
 
-Navigiere zu deinem neu erstellten Repository auf [GitHub.com](https://github.com/) und untersuche:
+Lade den neuen Branch auf das Remote-Repository in GitHub hoch.
 
-- die hochgeladenen Dateien im Repository
-- die Branches, insb. den neuen Branch
-- (Optional) den GitHub Actions Workflow in `.github/workflows/ci.yml`
+```bash
+git push
+```
 
-### 4. Pull Request erstellen
+### 6. Pull Request erstellen
 
+Navigiere auf GitHub zu deinem Repository.
 Erstelle einen Pull Request, um den neuen Branch in den `main` Branch zu mergen.
 
 > [!NOTE]
 > Falls für einen Branch kürzlich Commits hochgeladen wurden, weist GitHub üblicherweise im Repository mit einem gelben Banner darauf hin.
 > Der Pull Request kann dann auch mit einem Klick auf den grünen Button **"Compare & pull request"** erstellt werden.
-> Ansonsten nutze die folgende Methode, die immer funktioniert.
+> **Falls das gelbe Banner nicht erscheint**, nutze die folgende Methode, die immer funktioniert.
 
 1. Klicke auf **"Pull requests"** in deinem Repository
 2. Klicke auf **"New pull request"**
 3. Wähle die erstellte Branch als Source und `main` als Target
 4. Erstelle den Pull Request
 
-### 5. GitHub Actions beobachten
+### 7. GitHub Actions beobachten
 
 Nach dem Erstellen des Pull Requests:
 
 1. Beobachte, wie automatisch ein GitHub Workflow startet. **Es kann ca. 5-10 Sekunden dauern, bis die Workflows im Pull Request registriert werden.**
-2. Beachte auch, dass der **"Merge pull request"**-Button sich nicht klicken lässt, da die Workflows für den Merge **Voraussetzung** sind.
-3. (Optional) Klicke die Workflows über dem **Merge pull request**-Button an und beobachte die ausgeführten Schritte,
-die in der Datei `.github/workflows/ci.yml` aus [Schritt 3](#3-repository-und-workflows-überprüfen) beschrieben werden.
+2. Klicke die Workflows über dem **Merge pull request**-Button an und beobachte die ausgeführten Schritte,
+die in der Datei `.github/workflows/ci.yml` aus [Schritt 4](#4-repository-und-workflows-überprüfen) beschrieben werden.
 
-### 6. Pull Request mergen
+> [!NOTE]
+> GitHub und andere Plattformen verfügen über Einstellungen, die erfolgreiche Pipelines zur Voraussetzung für
+> einen Merge machen. Somit können z.B. bestandene Tests erzwungen werden, bevor Änderungen in einen produktiven Branch gelangen.
+> Wäre dies konfiguriert, ließe sich der **"Merge pull request"** Button nicht betätigen, bis die Pipelines fehlerlos abschließen.
 
-Nachdem die Workflows erfolgreich abgeschlossen sind, kann der **Merge pull request**-Button geklickt werden. Führe den Merge durch.
+### 8. Fehlschlag auslösen
 
-### 7. Aufräumen
-
-Um kein verwaistes Repository zurückzulassen, räume die Ressourcen wieder auf, indem du das folgende Kommando im `terraform`-Ordner ausführst:
+Da eine der Pipelines korrekte Formatierung überprüft, kann ein Fehlschlag des Workflows einfach demonstriert werden.
+Verändere `sample.yaml` wie folgt:
 
 ```bash
-terraform destroy
+nano sample.yaml
 ```
 
-Bestätige die Löschung mit `yes`.
+- Verändere die Zeile des Attributs `hello:`, sodass nach dem `:` noch mehrere Leerzeichen folgen, z.B. `hello:   Security by Design`. Dies ist ein Formatierungsfehler, der zwar keinen Fehler produziert, aber einem Linter auffällt.
+- Entferne die erste Zeile, die `---` enthält. Dies signalisiert des Beginn eines YAML-Dokuments und sollte vorhanden sein. Ein Linter wird ggf. darauf hinweisen.
+
+Speichere die Änderungen mit `STRG + S` und verlasse den Editor mit `STRG + X`.
+
+Lade die Änderungen als Commit in das Remote-Repository auf GitHub:
+
+```bash
+git add sample.yaml
+git commit -m "Format error"
+git push
+```
+
+### 9. Formatting-Workflow beobachten
+
+Beobachte auf der Website des Pull Requests die automatische erneute Ausführung der Workflows.
+Diese wurden vom neu hochgeladenen Commit ausgelöst.
+
+Klicke den Workflow `Repository Content CI / Format Check (Python & YAML) (pull_request)` und beobachte die Ausführung.
+
+Nachdem der Workflow fehlgeschlagen ist, aktualisiere die Seite und beachte dann oben die **Annotations**-Anzeige.
+Hier können Schritte besondere Ergebnisse hervorheben. `yamllint` zeigt uns die eben eingebauten Formatierungsfehler klar auf.
+
+### 10. Aufräumen
+
+Dies waren alle Schritte des Labs.
+Um kein verwaistes Repository zurückzulassen, lösche das Repository, z.B. mit der GitHub CLI.
+
+```bash
+gh repo delete
+```
+
+Bestätige die Löschung durch Eingabe des Repository-Namens.
 
 ### Abschluss
 
-In diesem Lab hast du gesehen, wie CI-Pipelines (Continuous Integration) genutzt werden können, um repetitive Aufgaben wie Formatierung und andere Prüfungen durchzuführen.
+In diesem Lab hast du gesehen, wie CI-Pipelines (Continuous Integration) genutzt werden können, um repetitive Aufgaben, wie Formatierung und andere Prüfungen, automatisiert durchzuführen.
 Neben GitHub Workflows gibt es noch andere Tools, um derartige CI-Pipelines aufzusetzen, wie **GitLab CI**, **Travis CI**, uvm.
 
 ## Lokale Umgebung bauen
 
-### Lokale Umgebung mit Docker
+Dieses Lab kann mit Docker selbst nachvollzogen und durchgearbeitet werden.
+Voraussetzung ist eine Installation von [`docker`](https://docs.docker.com/engine/install/) (empfohlen)
+ODER eine lokale Installation von [`GitHub CLI`](https://github.com/cli/cli#installation) (**beachte den untenstehenden Hinweis!**).
 
-#### 1. Klone das Repository
+> [!NOTE]
+> In diesem Lab werden keine besonderen Programme außer `GitHub CLI` genutzt, daher kann es auch ohne Docker
+> genutzt werden. GitHub CLI muss dann lokal verfügbar sein.
+> Einige wenige `git`-Kommandos aus den Anweisungen (z.B. `git push`) könnten weitere Parameter benötigen,
+> da die `lab-homedir/.gitconfig`-Datei nicht vorkonfiguriert wurde. Sie ist nicht nötig und nimmt nur einige
+> Konfigurationen und Parameter für Kommandos vorweg.
+> Nutze diese Variante nur, wenn du mit Git-Einstellungen umgehen und eventuelle Fehler selbst beheben kannst.
+
+### 1. Klone das Repository
 
 ```bash
 git clone <repository-url>
 cd security-by-design/labs/00-github-workflows
 ```
 
-#### 2. Baue den Container
+### 2. Baue den Container
 
 ```bash
 docker build -t labs/00-github-workflows .
 ```
 
-#### 3. Starten des Containers
+### 3. Starten des Containers
 
 ```bash
 docker run -it --name github-workflows --hostname github-workflows labs/00-github-workflows
 ```
 
-#### Existierenden Container verwenden
+### Existierenden Container verwenden
 
 Falls der Container bereits existiert:
 
@@ -168,7 +240,7 @@ Falls der Container bereits existiert:
 docker start -i github-workflows
 ```
 
-#### Container löschen/zurücksetzen
+### Container löschen/zurücksetzen
 
 ```bash
 docker rm github-workflows
