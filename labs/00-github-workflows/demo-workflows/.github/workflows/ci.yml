@@ -1,3 +1,4 @@
+---
 name: Repository Content CI
 
 on:
@@ -7,8 +8,6 @@ on:
     types:
       - opened
       - synchronize
-
-  workflow_dispatch:
 
 jobs:
   trufflehog:
@@ -35,11 +34,18 @@ jobs:
         uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.12"
-      - name: Install formatters
-        run: pip install black yamllint
+      - name: Install yamllint
+        run: pip install yamllint==1.37.1
       - name: Run black (Python formatter)
-        run: black --check .
+        id: black
+        uses: psf/black@stable
+        with:
+          version: "25.9.0"
         continue-on-error: true
       - name: Run yamllint (YAML linter)
-        run: yamllint .
+        id: yaml
+        run: yamllint . --format github
         continue-on-error: true
+      - name: Fail if formatters/linter failed
+        if: steps.black.outcome == 'failure' || steps.yaml.outcome == 'failure'
+        run: exit 1

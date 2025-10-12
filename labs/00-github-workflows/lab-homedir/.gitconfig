@@ -1,0 +1,7 @@
+[init]
+  defaultBranch = main
+[user]
+  email = labuser@github-workflows.lab
+  name = labuser
+[push]
+  autoSetupRemote = true
