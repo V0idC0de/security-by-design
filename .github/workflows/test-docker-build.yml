@@ -1,6 +1,7 @@
 name: Docker Build Test
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - "labs/**"
@@ -11,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Find changed Environments
     outputs:
-      matrix: ${{ steps.changed-labs.outputs.matrix }}
+      matrix: ${{ steps.changed-labs.outputs.matrix || steps.all-dockerfiles.outputs.matrix }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -28,6 +29,7 @@ jobs:
 
       - name: Find changed labs and demos directories
         id: changed-labs
+        if: github.event_name != 'workflow_dispatch'
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
         run: |
@@ -39,6 +41,18 @@ jobs:
           )"
           echo "matrix=$result" >> $GITHUB_OUTPUT
 
+      - name: Find Dockerfile directories
+        id: all-dockerfiles
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          result="$(
+            find labs demos -maxdepth 2 -type f -name Dockerfile \
+            | xargs -n1 dirname \
+            | sort -u \
+            | jq -R -s -c 'split("\n")[:-1]'
+          )"
+          echo "matrix=$result" >> $GITHUB_OUTPUT
+
   build-docker-images:
     needs: changed-files
     name: Docker Build
@@ -46,7 +60,6 @@ jobs:
     strategy:
       matrix:
         dir: ${{ fromJson(needs.changed-files.outputs.matrix) }}
-      fail-fast: false
     env:
       IMAGE_NAME: test-image
     steps:
