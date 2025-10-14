@@ -51,8 +51,9 @@
     jid: "{{ item.ansible_job_id }}"
   register: build_results
   until: build_results.finished
-  retries: 1
-  delay: 5
+  # 60 tries * 10 seconds = 10 minutes max wait
+  retries: 60
+  delay: 10
   loop: "{{ build_jobs.results }}"
   loop_control:
     label: "{{ item.item.image_name }}"
