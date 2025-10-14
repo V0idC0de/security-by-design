@@ -1,6 +1,8 @@
 locals {
+  public_ip = google_compute_instance.container-host.network_interface[0].access_config[0].nat_ip
   outputs = {
-    public_ip      = google_compute_instance.container-host.network_interface[0].access_config[0].nat_ip
+    public_ip      = local.public_ip
+    fqdn           = length(data.http.duckdns-update) > 0 ? "${var.dns_name}.duckdns.org" : try(local.public_ip, null)
     initial_user   = var.machine.username
     inventory_path = abspath("${path.module}/../ansible/inventory")
     ssh            = { for k, v in local.ssh : k => abspath(v) }
@@ -10,6 +12,11 @@ locals {
 output "public_ip" {
   description = "Public IP address of the VM."
   value       = local.outputs.public_ip
+}
+
+output "fqdn" {
+  description = "FQDN of the VM, or the public IP if no DNS zone was specified."
+  value       = local.outputs.fqdn
 }
 
 output "initial_user" {

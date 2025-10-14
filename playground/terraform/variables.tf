@@ -61,3 +61,28 @@ variable "machine_state" {
     error_message = "The machine_state must be either 'RUNNING', 'SUSPENDED', or 'TERMINATED'."
   }
 }
+
+variable "dns_name" {
+  description = "Subdomain of duckdns.org to use for the VM's FQDN. If unset, no record at DuckDNS will be created/refreshed. This name must be registered at DuckDNS beforehand!"
+  type        = string
+  nullable    = true
+  default     = null
+
+  validation {
+    condition     = var.dns_name == null || can(regex("^[a-zA-Z0-9-]{3,64}$", var.dns_name))
+    error_message = "The dns_name must be a valid subdomain (e.g. 'example') without any dots."
+  }
+}
+
+variable "duckdns_token" {
+  description = "The token for the DuckDNS API. Required if dns_name is set."
+  type        = string
+  nullable    = true
+  default     = null
+  sensitive   = true
+
+  validation {
+    condition     = var.duckdns_token == null || can(regex("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$", var.duckdns_token))
+    error_message = "Token for DuckDNS doesn't seem to be a valid UUID format, but that would be expected."
+  }
+}
