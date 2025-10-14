@@ -32,5 +32,6 @@ RUN git init && \
 
 # Setze Working Directory als Home-Verzeichnis des Benutzers
 WORKDIR /home/$USERNAME
+ENV TERM=xterm-color
 
-CMD ["/bin/bash"]
+ENTRYPOINT ["/bin/bash"]
