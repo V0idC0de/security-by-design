@@ -1,4 +1,17 @@
 ---
+- name: Get all existing users from /etc/passwd
+  ansible.builtin.command: getent passwd
+  changed_when: false
+  register: passwd_entries
+
+- name: Set fact with list of existing usernames
+  ansible.builtin.set_fact:
+    existing_users: "{{ passwd_entries.stdout_lines | map('split', ':') | map('first') | list }}"
+
+- name: Set fact with new users (lab_users not in existing_users)
+  ansible.builtin.set_fact:
+    new_users: "{{ lab_users | difference(existing_users) }}"
+
 - name: Ensure lab users exist with password same as username
   become: true
   ansible.builtin.user:
@@ -7,7 +20,7 @@
     update_password: "{{ 'always' if reset_password else 'on_create' }}"
     state: present
     shell: /bin/bash
-  loop: "{{ lab_users }}"
+  loop: "{{ lab_users | unique}}"
   register: lab_os_users
 
 - name: Set fact with names of created/modified users
@@ -19,3 +32,8 @@
         | map(attribute='name') 
         | list 
       }}
+
+- name: Expire password for users with their password changed
+  become: true
+  ansible.builtin.command: chage -d 0 "{{ item }}"
+  loop: "{{ lab_os_users_changed if reset_password else new_users }}"
