@@ -22,6 +22,7 @@ RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
+ENV TERM=xterm-color
 
 # Installiere Google Cloud SDK/CLI
 RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86.tar.gz \
