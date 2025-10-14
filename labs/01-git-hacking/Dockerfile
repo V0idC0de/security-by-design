@@ -42,6 +42,7 @@ git commit -m "Initial commit"
 RUN bash $WEBSERVER_PATH/commit-generator.sh $WEBSERVER_PATH/webroot/config/db.json
 
 WORKDIR /home/$USERNAME
+ENV TERM=xterm-color
 
 # ARGs können in ENTRYPOINTs nicht gut verwendet werden - daher nochmal als ENV
 ENV WEBSERVER_PATH=$WEBSERVER_PATH

@@ -37,5 +37,6 @@ RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
+ENV TERM=xterm-color
 
 ENTRYPOINT ["/bin/bash"]
