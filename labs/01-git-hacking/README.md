@@ -106,7 +106,7 @@ Bandit analysiert den Python-Code und findet eine offensichtliche SQL-Injection-
 > Hier können in der Praxis natürlich beliebige andere Analysen folgen, z.B. Suche nach "versteckten" Endpunkten.
 > Denke selbst kurz darüber nach, welche Möglichkeiten es für einen Angreifer eröffnet, den Quellcode zur Verfügung zu haben.
 > Zwar ist **Security by Obscurity** keine gute Strategie, doch den Quellcode zu kennen ermöglicht einem Angreifer sehr viel effektivere Suche
-> nach Angriffsmöglichkeiten, wenn es die Ergebnisse nicht schon direkt mitliefert (z.B. Klartext-Secrets). Daher sollte Quellcode gut geschützt werden.
+> nach Angriffsmöglichkeiten, wenn es die Ergebnisse nicht schon direkt mitliefert (z.B. Klartext-Secrets).
 
 ### Abschluss
 

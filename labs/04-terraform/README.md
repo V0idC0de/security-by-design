@@ -3,7 +3,7 @@
 - [04 Terraform](#04-terraform)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
-    - [2. GitHub Personal Access Token bereitstellen](#2-github-personal-access-token-bereitstellen)
+    - [2. GitHub Login](#2-github-login)
     - [3. Terraform Plan ausführen](#3-terraform-plan-ausführen)
     - [3. Terraform mit Variablen-Datei ausführen](#3-terraform-mit-variablen-datei-ausführen)
     - [4. Repositories auf GitHub überprüfen](#4-repositories-auf-github-überprüfen)
@@ -43,28 +43,9 @@ tree
 cd terraform
 ```
 
-### 2. GitHub Personal Access Token bereitstellen
+### 2. GitHub Login
 
-Da dieses Labor mit GitHub interagiert, wird ein Personal Access Token benötigt.
-Falls du keines mit ausreichenden Berechtigungen besitzt, folge den Anweisungen [hier](/GitHub-PAT.md).
-
-```bash
-# Erstelle eine Kopie der Sample-Datei ohne .sample-Erweiterung
-cp github-pat.auto.tfvars.json.sample github-pat.auto.tfvars.json
-
-# Bearbeite die Datei, um deinen GitHub PAT einzufügen
-nano github-pat.auto.tfvars.json
-# Speichern und schließen mit Strg+S (speichern), dann Strg+X (verlassen)
-```
-
-`.auto.tfvars` Dateien werden von Terraform bei jedem Lauf automatisch eingelesen.
-Das ist hier praktisch, da das GitHub-Token immer erforderlich ist.
-
-> [!WARNING]
-> Derartige Secrets sollten nicht in ein Repository committet werden.
-> Daher schließt die `.gitignore` dieses Repositories alle `.tfvars` Dateien von Git aus,
-> sodass keine versehentlichen Commits mit sensiblen Datein passieren.
-> Einzige Ausnahme von der `.gitignore` sind die `sample.*.tfvars.json` Dateien, die später verwendet werden.
+Folge den Schritten in [GitHub Login](/github-login.md).
 
 ### 3. Terraform Plan ausführen
 
