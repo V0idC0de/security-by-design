@@ -21,11 +21,15 @@ COPY ./terraform /home/$USERNAME/terraform
 # Kopiere .bashrc aus dem ubuntu-Image
 COPY --from=ubuntu /root/.bashrc /home/$USERNAME/.bashrc
 
+# Aktiviere Bash-Vervollständigung für GitHub CLI
+RUN echo 'eval "$(gh completion -s bash)"' >> /home/$USERNAME/.bashrc
+RUN terraform -install-autocomplete
+
 # Setze Berechtigungen für den Benutzer
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 USER $USERNAME
-WORKDIR /home/$USERNAME/terraform
+WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 
 ENTRYPOINT ["/bin/bash"]

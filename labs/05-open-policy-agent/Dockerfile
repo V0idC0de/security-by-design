@@ -29,4 +29,7 @@ USER $USERNAME
 WORKDIR /home/$USERNAME/terraform
 ENV TERM=xterm-color
 
+# Aktiviere Bash-Vervollständigung für Terraform
+RUN terraform -install-autocomplete
+
 ENTRYPOINT ["/bin/bash"]

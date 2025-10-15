@@ -3,7 +3,7 @@
 - [03 GitHub Workflows](#03-github-workflows)
   - [Durchführung](#durchführung)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
-    - [2. GitHub CLI Login](#2-github-cli-login)
+    - [2. GitHub Login](#2-github-login)
     - [3. Repository erstellen](#3-repository-erstellen)
     - [4. Repository und Workflows überprüfen](#4-repository-und-workflows-überprüfen)
     - [5. Neuen Branch pushen](#5-neuen-branch-pushen)
@@ -45,32 +45,9 @@ tree -a demo-workflows
 
 Diese Dateien werden gleich schrittweise als Commits in ein Git-Repository geschrieben.
 
-### 2. GitHub CLI Login
+### 2. GitHub Login
 
-Um Aktionen auf GitHub via CLI durchzuführen, melde dich bei deinem GitHub Account an.
-
-```bash
-# delete_repo ist als zusätzliche Berechtigung nötig, um am Ende aufzuräumen
-gh auth login -s delete_repo
-```
-
-Wähle der Reihe nach die Optionen:
-
-1. `GitHub.com`
-2. `HTTPS` auf die Frage der Verbindungsart (außer du weißt, was du tust und möchtest lieber `SSH`)
-3. `Y` auf die Frage "Authenticate Git with your GitHub Credentials"
-4. `Login with web browser` auf die Frage, welche Anmeldemethode genutzt werden soll
-
-Kopiere den gezeigten Code, der in etwa so aussieht: `ABCD-EFGH`
-Drücke `ENTER`, um zu versuchen die Website zur Anmeldung zu öffnen.
-In der Laborumgebung bzw. innerhalb von Docker wird dies fehlschlagen.
-Es per `ENTER` zu versuchen ist trotzdem nötig.
-
-Besuche anschließend die gezeigte Adresse manuell.
-Melde dich ggf. bei GitHub an, trage den Code auf der Website ein und bestätige die Anmeldung.
-
-GitHub CLI ist jetzt einsatzbereit. Dieser Schritt muss üblicherweise nicht wiederholt werden,
-bzw. nur dann, wenn die GitHub CLI explizit dazu auffordert.
+Folge den Schritten in [GitHub Login](/github-login.md).
 
 ### 3. Repository erstellen
 
