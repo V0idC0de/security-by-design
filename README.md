@@ -1,5 +1,7 @@
 # Security By Design
 
+[![Docker Build Test](https://github.com/V0idC0de/security-by-design/actions/workflows/test-docker-build.yml/badge.svg?branch=main)](https://github.com/V0idC0de/security-by-design/actions/workflows/test-docker-build.yml)
+
 Labs, Demos and Scripts around a lecture about "Security by Design" and DevSecOps.
 
 ## License
