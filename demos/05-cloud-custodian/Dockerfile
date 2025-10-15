@@ -1,3 +1,7 @@
+# Image um die .bashrc zu kopieren
+FROM ubuntu:noble@sha256:59a458b76b4e8896031cd559576eac7d6cb53a69b38ba819fb26518536368d86 AS ubuntu
+
+# Haupt-Image
 FROM hashicorp/terraform:1.13@sha256:dfb1889a8ee74ada3ddacc48f89b8a0d69f3e114de3d8a2ce15f6a8d3dbfdbe2
 
 # Installiere grundlegende Pakete
@@ -33,8 +37,11 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cl
 && rm google-cloud-cli-linux-x86.tar.gz \
 && mkdir -p /home/$USERNAME/.local \
 && mv google-cloud-sdk /home/$USERNAME/.local/gcloud \
-&& /home/$USERNAME/.local/gcloud/install.sh --quiet --path-update true \
-&& echo 'source /home/labuser/.local/gcloud/completion.bash.inc' >> /home/$USERNAME/.bashrc
+&& /home/$USERNAME/.local/gcloud/install.sh --quiet --path-update true
+
+# Aktiviere Bash-Vervollständigung für Terraform und gcloud
+RUN terraform -install-autocomplete
+RUN echo 'source /home/labuser/.local/gcloud/completion.bash.inc' >> /home/$USERNAME/.bashrc
 
 # Installiere Cloud Custodian
 RUN pipx ensurepath \
