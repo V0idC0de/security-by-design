@@ -1,6 +1,6 @@
-# 01 Terraform
+# 04 Terraform
 
-- [01 Terraform](#01-terraform)
+- [04 Terraform](#04-terraform)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
     - [2. GitHub Personal Access Token bereitstellen](#2-github-personal-access-token-bereitstellen)
@@ -243,22 +243,22 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `labs/03-terraform` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `labs/04-terraform` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/labs/03-terraform
+cd security-by-design/labs/04-terraform
 ```
 
 ```bash
-docker build -t demos/03-terraform .
+docker build -t labs/04-terraform .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name terraform --hostname terraform labs/03-terraform
+docker run -it --name terraform --hostname terraform labs/04-terraform
 ```
 
 > [!NOTE]
