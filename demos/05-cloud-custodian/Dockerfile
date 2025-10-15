@@ -17,6 +17,9 @@ RUN groupadd -g $USER_GID $USERNAME && useradd -m -u $USER_UID -g $USER_GID $USE
 COPY ./terraform /home/$USERNAME/terraform
 COPY ./policies /home/$USERNAME/policies
 
+# Kopiere .bashrc aus dem ubuntu-Image
+COPY --from=ubuntu /root/.bashrc /home/$USERNAME/.bashrc
+
 # Setze Berechtigungen für den Benutzer
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
