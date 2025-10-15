@@ -1,6 +1,6 @@
-# 00 GitHub Workflows
+# 03 GitHub Workflows
 
-- [00 GitHub Workflows](#00-github-workflows)
+- [03 GitHub Workflows](#03-github-workflows)
   - [Durchführung](#durchführung)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
     - [2. GitHub CLI Login](#2-github-cli-login)
@@ -217,19 +217,19 @@ ODER eine lokale Installation von [`GitHub CLI`](https://github.com/cli/cli#inst
 
 ```bash
 git clone <repository-url>
-cd security-by-design/labs/00-github-workflows
+cd security-by-design/labs/03-github-workflows
 ```
 
 ### 2. Baue den Container
 
 ```bash
-docker build -t labs/00-github-workflows .
+docker build -t labs/03-github-workflows .
 ```
 
 ### 3. Starten des Containers
 
 ```bash
-docker run -it --name github-workflows --hostname github-workflows labs/00-github-workflows
+docker run -it --name github-workflows --hostname github-workflows labs/03-github-workflows
 ```
 
 ### Existierenden Container verwenden

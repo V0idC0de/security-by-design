@@ -1,6 +1,6 @@
-# 02 Open Policy Agent & Terraform
+# 05 Open Policy Agent & Terraform
 
-- [02 Open Policy Agent \& Terraform](#02-open-policy-agent--terraform)
+- [05 Open Policy Agent \& Terraform](#05-open-policy-agent--terraform)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
     - [2. GitHub Personal Access Token bereitstellen](#2-github-personal-access-token-bereitstellen)
@@ -149,20 +149,20 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich im Verzeichnis `labs/04-open-policy-agent` im Repository befindest, bevor du `docker build` ausführst!
+> Stelle sicher, dass du dich im Verzeichnis `labs/05-open-policy-agent` im Repository befindest, bevor du `docker build` ausführst!
 
 ```bash
-cd security-by-design/labs/04-open-policy-agent
+cd security-by-design/labs/05-open-policy-agent
 ```
 
 ```bash
-docker build -t labs/04-open-policy-agent .
+docker build -t labs/05-open-policy-agent .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name open-policy-agent --hostname open-policy-agent labs/04-open-policy-agent
+docker run -it --name open-policy-agent --hostname open-policy-agent labs/05-open-policy-agent
 ```
 
 > [!NOTE]
