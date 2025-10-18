@@ -43,20 +43,6 @@ resource "github_actions_secret" "GITHUB_PAT" {
   secret_name     = "GH_PAT"
   plaintext_value = var.github_token
 }
-
-# To securely pass the Terraform Plan (including the GitHub PAT) between Jobs
-# we encrypt it using a Repository Secret. These resources provide that random key.
-resource "random_password" "tf_plan_key" {
-  length  = 24
-  special = true
-}
-
-resource "github_actions_secret" "TF_PLAN_KEY" {
-  repository      = github_repository.workflow_lab.name
-  secret_name     = "TF_PLAN_KEY"
-  plaintext_value = random_password.tf_plan_key.result
-}
-
 locals {
   # As people might fiddle with the inner Terraform code contained in `repository-content`,
   # it's better to explicitly define the files we want to upload.

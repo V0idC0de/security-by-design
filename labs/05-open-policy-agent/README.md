@@ -8,7 +8,11 @@
     - [4. Repository und Pull Request öffnen](#4-repository-und-pull-request-öffnen)
     - [5. GitHub Workflow beobachten](#5-github-workflow-beobachten)
     - [6. Analyse der Policy-Verletzungen](#6-analyse-der-policy-verletzungen)
-    - [7. Aufräumen](#7-aufräumen)
+    - [7. Policy-Verletzungen beheben](#7-policy-verletzungen-beheben)
+      - [7.1 Fix via `git`](#71-fix-via-git)
+      - [7.2 Fix via GitHub-Website](#72-fix-via-github-website)
+    - [8. Erneute Workflow-Ausführung prüfen](#8-erneute-workflow-ausführung-prüfen)
+    - [9. Aufräumen](#9-aufräumen)
     - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
     - [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker)
@@ -44,17 +48,12 @@ cd terraform
 
 Folge den Schritten in [GitHub Login](/github-login.md).
 
-### 3. Terraform Plan ausführen
+Anschließend führe den folgenden Befehl aus, um das GitHub Token als Variable für Terraform
+zur Verfügung zu stellen (siehe auch `variables.token.tf`), indem es als Umgebungsvariable
+`TF_VAR_` gefolgt vom Namen der Terraform-Variablen gesetzt wird.
 
 ```bash
-# Initialisiere das Repository einmalig
-terraform init
-
-# Führe Terraform Plan ohne Argumente aus
-terraform plan
-
-# Wende den Plan an
-terraform apply
+export TF_VAR_github_token="$(gh auth token)"
 ```
 
 > [!WARNING]
@@ -67,6 +66,16 @@ terraform apply
 > Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
 > Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
 > daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 7](#7-aufräumen)).
+
+### 3. Terraform Plan ausführen
+
+```bash
+# Initialisiere das Repository einmalig
+terraform init
+
+# Wende den Plan an, um das Repository zu erstellen.
+terraform apply
+```
 
 Nach erfolgreichem `terraform apply` findest du im Terraform Output die URL zum neuen Repository sowie einen direkten Link zur Pull-Request-Erstellung. Mit `terraform output` kommst du schnell an die Outputs.
 
@@ -85,18 +94,75 @@ Klicke am unteren Ende des Pull Requests auf den aktiven **Workflow Run** und be
 Der Workflow führt einen `terraform plan` aus und prüft das Ergebnis mit **Open Policy Agent** `conftest` gegen die im Repository abgelegten Policies (siehe `/policy/*.rego`).
 
 > [!WARNING]
-> Der Workflow wird fehlschlagen, wenn geplante Änderungen gegen eine Policy verstoßen.
+> Der Workflow wird fehlschlagen, da wir Änderungen haben, die gegen eine Policy verstoßen.
 
 ### 6. Analyse der Policy-Verletzungen
 
-Klicke auf die Details des fehlgeschlagenen Workflow-Runs. Im Abschnitt, in dem `conftest` ausgeführt wurde, findest du genaue Hinweise, welche Policies verletzt wurden.
-Am oberen Ende des **Workflow Runs** des Logs werden **Annotationen** angezeigt, die die Policy-Verstöße nochmal übersichtlich ganz oben auflisten.
+Klicke auf den fehlgeschlagenen Workflow am unteren Ende des Pull Requests.
+Am oberen Ende des **Workflow Runs** des Logs werden **Annotationen** angezeigt, die die Policy-Verstöße übersichtlich auflisten.
+Falls du die Workflow-Seite bereits geöffnet hattest, musst du sie ggf. aktualisieren, da sie vom späten Schritt `Run OPA Policy Check` geschrieben werden.
 
 > [!NOTE]
 > Der Schritt `terraform plan` war erfolgreich, aber die Policy-Prüfung ist fehlgeschlagen.
 > So werden unerwünschte Änderungen frühzeitig erkannt und blockiert, selbst wenn der `terraform plan` an an sich gültig ist.
 
-### 7. Aufräumen
+### 7. Policy-Verletzungen beheben
+
+Kehre zurück in die Laborumgebung und behebe die Policy-Verstöße.
+Dies kann mit `git` in der Konsole erledigt werden oder auf der GitHub-Website. Wähle **einen** der beiden Wege.
+
+#### 7.1 Fix via `git`
+
+Kehre in die Laborumgebung zurück und wechsle mit `cd` (ohne Parameter) ins Home-Verzeichnis.
+Klone dann das GitHub-Repository, das eben erstellt wurde.
+
+```bash
+gh repo clone demo-open-policy-agent
+cd demo-open-policy-agent
+```
+
+Wechsele auf den Branch, auf den sich der Pull Request bezieht.
+
+```bash
+git checkout add-repositories
+```
+
+Behebe den Policy-Verstoß in `main.tf`, indem du die **Visibility** von `public` auf `private` setzt.
+Neben `nano` kann natürlich auch jeder andere Editor genutzt werden.
+
+```bash
+nano main.tf
+# Drücke zum Speichern und Verlassen "STRG + S", dann "STRG + X"
+```
+
+Um den Repository-Namen zu beheben, sehen wir in die `settings.yaml` Datei.
+Behebe dort das verbotene Wort `coffee` im Repository-Namen und ersetze es durch etwas anderes.
+
+```bash
+nano settings.yaml
+# Drücke zum Speichern und Verlassen "STRG + S", dann "STRG + X"
+```
+
+Mit `git status` sehen wir die beiden geänderten Dateien, committen diese jetzt und pushen danach in GitHub-Repository.
+
+```bash
+git add main.tf settings.yaml
+git commit -m "fix: Policy"
+git push
+```
+
+#### 7.2 Fix via GitHub-Website
+
+// TODO
+
+### 8. Erneute Workflow-Ausführung prüfen
+
+Kehre zum Pull Request zurück, wo der GitHub Workflow durch den Push der Änderungen erneut ausgeführt werden sollte.
+Eventuell muss die Website des Pull Requests aktualisiert werden, um die erneute Ausführung anzuzeigen.
+
+Diesmal sollte der Workflow erfolgreich durchlaufen. Merge den Pull Request zum Abschluss - der Workflow wird die Änderungen nicht wirklich anwenden.
+
+### 9. Aufräumen
 
 Um kein verwaistes Repository zurückzulassen, räume die Ressourcen wieder auf, indem du das folgende Kommando im `terraform`-Ordner ausführst:
 

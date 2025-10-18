@@ -47,6 +47,4 @@ jobs:
           sudo dpkg -i conftest_${CONFTEST_VERSION}_linux_amd64.deb >/dev/null
 
       - name: Run OPA Policy Check
-        env:
-          TF_PLAN_JSON: ${{ steps.tf-plan-decrypt.outputs.plan_json }}
         run: conftest test --policy policy --all-namespaces --strict --output github terraform-plan.json

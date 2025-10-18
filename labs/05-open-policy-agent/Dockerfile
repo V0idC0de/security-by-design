@@ -5,7 +5,7 @@ FROM ubuntu:noble@sha256:59a458b76b4e8896031cd559576eac7d6cb53a69b38ba819fb26518
 FROM hashicorp/terraform:1.13@sha256:dfb1889a8ee74ada3ddacc48f89b8a0d69f3e114de3d8a2ce15f6a8d3dbfdbe2
 
 # Installiere grundlegende Pakete
-RUN apk add --no-cache less nano vim bat busybox-extras shadow bash curl jq yq \
+RUN apk add --no-cache less nano vim bat busybox-extras shadow bash bash-completion curl jq yq github-cli \
 && ln -s "$(which bat)" "$(dirname $(which bat))/batcat"
 
 # Erstelle einen nicht-root Benutzer
@@ -26,10 +26,15 @@ COPY --from=ubuntu /root/.bashrc /home/$USERNAME/.bashrc
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 USER $USERNAME
-WORKDIR /home/$USERNAME/terraform
+WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 
-# Aktiviere Bash-Vervollständigung für Terraform
+# Konfiguriere Git für den Benutzer
+RUN git config --global user.name "labuser" && \
+    git config --global user.email "labuser@opa.lab"
+
+# Aktiviere Bash-Vervollständigung für Terraform und GitHub CLI
 RUN terraform -install-autocomplete
+RUN echo 'eval "$(gh completion -s bash)"' >> /home/$USERNAME/.bashrc
 
 ENTRYPOINT ["/bin/bash"]
