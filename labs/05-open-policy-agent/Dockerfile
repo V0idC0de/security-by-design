@@ -30,8 +30,8 @@ WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 
 # Konfiguriere Git für den Benutzer
-RUN git config user.name "labuser" && \
-    git config user.email "labuser@opa.lab"
+RUN git config --global user.name "labuser" && \
+    git config --global user.email "labuser@opa.lab"
 
 # Aktiviere Bash-Vervollständigung für Terraform und GitHub CLI
 RUN terraform -install-autocomplete
