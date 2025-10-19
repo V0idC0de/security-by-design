@@ -43,4 +43,6 @@ including absolute paths to **SSH Public Key**, **SSH Private Key**, and **SSH C
 4. `pipx inject ansible-core passlib==1.7.4`
    1. Additional requirement, which may not be present
 5. `ansible-galaxy install -r requirements.yml`
-6. `ansible-playbook -i ../ssh/inventory basic-setup.yml`
+6. `ansible-playbook create-users.yml`
+7. `ansible-playbook build-images.yml`
+8. 
