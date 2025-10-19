@@ -78,7 +78,7 @@ Folge dem Link im angezeigten Text, um direkt zum erstellten Repository zu gelan
 
 > [!NOTE]
 > Die `project_number` ist ein Pflichtfeld und muss die Projektnummer des Projekts sein,
-> das in der [Demo-Umgebung](/demos/00-id-tokens/) erstellt wurde.
+> das in der [Demo-Umgebung](/demos/00-gcp-wif/) erstellt wurde.
 > In einer bereitgestellten Umgebung wird der Kursleiter diese Nummer nennen.
 > Wird das Lab manuell durchgeführt, muss die Projektnummer aus der Demo-Umgebung ermittelt werden.
 
@@ -165,7 +165,7 @@ Voraussetzung ist
 1. **Eines** der beiden folgenden Dinge
    1. eine Installation von [`docker`](https://docs.docker.com/engine/install/) (empfohlen)
    2. eine lokale Installation von [`GitHub CLI`](https://github.com/cli/cli#installation) (**beachte den untenstehenden Hinweis!**).
-2. Ein Google Cloud Account, um die [Demo-Umgebung](/demos/00-id-tokens/) in Google Cloud aufzubauen
+2. Ein Google Cloud Account, um die [Demo-Umgebung](/demos/00-gcp-wif/) in Google Cloud aufzubauen
 
 > [!NOTE]
 > Für die Nutzung des Labs ohne `docker` ist es nötig, einige Einstellungen

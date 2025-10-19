@@ -17,7 +17,7 @@ jobs:
       id-token: write
     env:
       PROJECT_NUMBER: "${{ inputs.project_number }}"
-      # Configuration for some values, that need to be set in demos/00-id-tokens
+      # Configuration for some values, that need to be set in demos/00-gcp-wif
       WIF_POOL_NAME: "github"
       WIF_PROVIDER: "lab-id-tokens"
     steps:

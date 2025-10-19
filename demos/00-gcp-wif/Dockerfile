@@ -43,6 +43,6 @@ RUN terraform -install-autocomplete
 RUN echo 'source /home/labuser/.local/gcloud/completion.bash.inc' >> /home/$USERNAME/.bashrc
 
 # Schreibe Hinweis auf Guide in GUIDE.md
-RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/demos/00-id-tokens" > /home/$USERNAME/GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/demos/00-gcp-wif" > /home/$USERNAME/GUIDE.md
 
 ENTRYPOINT ["/bin/bash"]

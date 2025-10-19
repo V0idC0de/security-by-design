@@ -59,23 +59,23 @@ git clone https://github.com/V0idC0de/security-by-design.git
 #### 2. Baue den Container
 
 > [!WARNING]
-> Stelle sicher, dass du dich in diesem Verzeichnis `demos/00-id-tokens` im Repository befindest,
+> Stelle sicher, dass du dich in diesem Verzeichnis `demos/00-gcp-wif` im Repository befindest,
 > bevor du `docker build` ausführst! Für alle anderen `docker`-Befehle ist das Verzeichnis egal.
 
 ```bash
 # Überspringe dieses Kommando, falls du schon in diesem Unterordner bist
-cd security-by-design/demos/00-id-tokens
+cd security-by-design/demos/00-gcp-wif
 ```
 
 ```bash
 # Für diese Demo werden mehrere Tools vorbereitet - der Build-Prozess kann wenige Minuten dauern.
-docker build -t demos/00-id-tokens .
+docker build -t demos/00-gcp-wif .
 ```
 
 #### 3. Starten des Containers
 
 ```bash
-docker run -it --name demos-id-tokens --hostname demos-id-tokens demos/00-id-tokens
+docker run -it --name demos-id-tokens --hostname demos-id-tokens demos/00-gcp-wif
 ```
 
 > [!NOTE]
