@@ -45,4 +45,4 @@ including absolute paths to **SSH Public Key**, **SSH Private Key**, and **SSH C
 5. `ansible-galaxy install -r requirements.yml`
 6. `ansible-playbook create-users.yml`
 7. `ansible-playbook build-images.yml`
-8. 
+8. `ansible-playbook lab-containers-up.yml`
