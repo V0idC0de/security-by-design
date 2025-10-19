@@ -24,7 +24,7 @@ In diesem Lab wird die Nutzung eines **ID-Tokens** demonstriert, das zur Anmeldu
 Dabei wird auf die Nutzung statische Zugangsdaten (z.B. einen API Key, Passwörter, o.Ä.) vollständig verzichtet.
 
 > [!NOTE]
-> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Terraform auch lokal ausprobiert werden.
+> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch lokal ausprobiert werden.
 > Eine Nutzungsanleitung zum lokalen Aufsetzen des Labs findet sich unter [Lokale Umgebung bauen](#lokale-umgebung-bauen).
 
 Bei lokaler Ausführung des Labs außerhalb einer bereitgestellten Testumgebung muss folgendes beachtet werden.
@@ -51,6 +51,10 @@ cd lab-id-tokens
 ### 2. GitHub Login
 
 Folge den Schritten in [GitHub Login](/github-login.md).
+
+> [!NOTE]
+> Wenn du diesen Prozess bereits kennst, kannst du einfach `gh auth login -s delete_repo` ausführen.
+> Die verlinkte Seite erklärt die Schritte dieses Kommandos lediglich genauer.
 
 ### 3. Repository erstellen
 

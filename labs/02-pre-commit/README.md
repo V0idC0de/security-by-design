@@ -25,7 +25,7 @@ So siehst du, wie sich Sicherheits- und Qualitätsprüfungen automatisiert in de
 Falls `pre-commit` einen Beanstandung im Code findet, gibt das Tool einen Fehler zurück, was zu einem Abbruch des Commits führt - gerade rechtzeitig, um die Fehler zu beheben.
 
 > [!NOTE]
-> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch sehr einfach lokal aufgesetzt werden.
+> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch lokal ausprobiert werden.
 > Eine Nutzungsanleitung zum lokalen Aufsetzen des Labs findet sich unter [Lokale Umgebung bauen](#lokale-umgebung-bauen).
 
 ## Durchführung
