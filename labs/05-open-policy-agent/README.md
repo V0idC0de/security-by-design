@@ -69,7 +69,7 @@ export TF_VAR_github_token="$(gh auth token)"
 >
 > Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
 > Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
-> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 7](#7-aufräumen)).
+> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 9](#9-aufräumen)).
 
 ### 3. Terraform Plan ausführen
 
