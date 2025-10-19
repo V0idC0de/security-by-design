@@ -48,4 +48,7 @@ RUN pipx ensurepath \
 && pipx install --quiet c7n \
 && pipx inject --quiet c7n c7n-gcp
 
+# Schreibe Hinweis auf Guide in GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/demos/05-cloud-custodian" > /home/$USERNAME/GUIDE.md
+
 ENTRYPOINT ["/bin/bash"]
