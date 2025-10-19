@@ -19,6 +19,10 @@
 
 In diesem Lab bekommst du einen Beispiel-Webserver, der eine Hauptseite ausliefert und den Zugriff aufs `config`-Verzeichnis blockiert. Das simuliert einen Webserver, der Quellcode und andere Dateien vor direktem Zugriff schützt. Ein kritischer Fehler ist aber, dass das `.git`-Verzeichnis beim Setup nicht entfernt oder geschützt wurde. Dadurch kann das komplette Repository rekonstruiert werden. Ziel des Labs ist es, diese Schwachstelle auszunutzen, das Repository mit dem Tool `githacker` wiederherzustellen, nach Secrets zu suchen und den Quellcode auf Schwachstellen zu checken.
 
+> [!NOTE]
+> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch lokal ausprobiert werden.
+> Eine Nutzungsanleitung zum lokalen Aufsetzen des Labs findet sich unter [Lokale Umgebung bauen](#lokale-umgebung-bauen).
+
 ## Durchführung
 
 Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befindest (bereitgestellte Umgebung oder lokal ausgeführter Container).

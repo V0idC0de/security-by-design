@@ -24,7 +24,7 @@ In diesem Lab wird gezeigt, Arbeitsaufläuge in GitHub-Repositories mit integrie
 um z.B. Secrets, potenziell gefährlichen Code und Formatierungsfehler zu finden, bevor sie in einen produktiven Branch gelangen.
 
 > [!NOTE]
-> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Terraform auch lokal ausprobiert werden.
+> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch lokal ausprobiert werden.
 > Eine Nutzungsanleitung zum lokalen Aufsetzen des Labs findet sich unter [Lokale Umgebung bauen](#lokale-umgebung-bauen).
 
 ## Durchführung
@@ -40,7 +40,7 @@ Wechsle zur Vorbereitung in den `demo-workflows` Ordner und wirf einen Blick auf
 ls -l
 cd demo-workflows
 # Zeige gesamte Ordnerstruktur
-tree -a demo-workflows
+tree -a
 ```
 
 Diese Dateien werden gleich schrittweise als Commits in ein Git-Repository geschrieben.
@@ -48,6 +48,10 @@ Diese Dateien werden gleich schrittweise als Commits in ein Git-Repository gesch
 ### 2. GitHub Login
 
 Folge den Schritten in [GitHub Login](/github-login.md).
+
+> [!NOTE]
+> Wenn du diesen Prozess bereits kennst, kannst du einfach `gh auth login -s delete_repo` ausführen.
+> Die verlinkte Seite erklärt die Schritte dieses Kommandos lediglich genauer.
 
 ### 3. Repository erstellen
 
@@ -67,7 +71,7 @@ Folgt dem Link im angezeigten Text, um schnell zum erstellen Repository zu gelan
 ### 4. Repository und Workflows überprüfen
 
 Navigiere zu deinem neu erstellten Repository und sieh dir die Struktur des Repositories an.
-Anschließend, sieh dir den GitHub Workflow genauer er, der in `.github/workflows/ci.yml` konfiguriert ist.
+Anschließend, sieh dir den GitHub Workflow, der in `.github/workflows/ci.yml` konfiguriert ist, genauer an.
 Dieser Workflow wird ausgeführt, wenn ein neuer Pull Request im Repository geöffnet oder geupdated wird
 (siehe Objekt `on:`).
 

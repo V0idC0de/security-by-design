@@ -27,7 +27,7 @@ In dieser Demo wird gezeigt, wie Terraform genutzt werden kann, um ein GitHub-Re
 Dadurch können Richtlinien automatisiert durchgesetzt werden, sodass bestimmte Konfigurationsänderungen – auch wenn sie technisch korrekt sind – aufgrund von Policy-Verstößen verhindert werden.
 
 > [!NOTE]
-> Wenn keine Demo-Umgebung zur Verfügung gestellt wird, kann das Lab mit Terraform auch lokal ausprobiert werden.
+> Wenn keine Lab-Umgebung zur Verfügung gestellt wird, kann das Lab mit Docker auch lokal ausprobiert werden.
 > Eine Nutzungsanleitung zum lokalen Aufsetzen des Labs findet sich unter [Lokale Umgebung bauen](#lokale-umgebung-bauen).
 
 ## Durchführung
@@ -47,6 +47,10 @@ cd terraform
 ### 2. GitHub Login
 
 Folge den Schritten in [GitHub Login](/github-login.md).
+
+> [!NOTE]
+> Wenn du diesen Prozess bereits kennst, kannst du einfach `gh auth login -s delete_repo` ausführen.
+> Die verlinkte Seite erklärt die Schritte dieses Kommandos lediglich genauer.
 
 Anschließend führe den folgenden Befehl aus, um das GitHub Token als Variable für Terraform
 zur Verfügung zu stellen (siehe auch `variables.token.tf`), indem es als Umgebungsvariable
