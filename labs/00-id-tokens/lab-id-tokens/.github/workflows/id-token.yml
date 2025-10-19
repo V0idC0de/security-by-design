@@ -1,0 +1,70 @@
+---
+name: "ID Token Exchange with GCP"
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_number:
+        description: "GCP Projekt Nummer, des Workload Identity Providers"
+        required: true
+        type: string
+
+jobs:
+  main:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PROJECT_NUMBER: "${{ inputs.project_number }}"
+      # Configuration for some values, that need to be set in demos/00-id-tokens
+      WIF_POOL_NAME: "github"
+      WIF_PROVIDER: "lab-id-tokens"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get ID Token for this Workflow
+        env:
+          ANNOTATION_TITLE: "Workflow_ID_Token"
+        run: |
+          id_token="$(
+            curl -sS \
+              -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lab-sample-token" \
+            | jq -r '.value' | base64 -w 0
+          )"
+          echo "::notice title=${ANNOTATION_TITLE}::${id_token}"
+
+      - name: Authenticate to Google Cloud with ID Token
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: "projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.WIF_POOL_NAME }}/providers/${{ env.WIF_PROVIDER }}"
+
+      - name: Set Project for all gcloud commands
+        id: project
+        run: |
+          project_id="$(gcloud projects describe ${PROJECT_NUMBER} --format json | jq -r '.projectId')"
+          gcloud config set project "${project_id}"
+          echo "id=${project_id}" >> "$GITHUB_OUTPUT"
+
+      - name: List all Buckets
+        id: buckets
+        run: |
+          # Get bucket names as a JSON array of strings
+          buckets="$(gcloud storage buckets list --format json | jq -c '[.[].name]')"
+          echo "::notice title=GCP_Buckets::${buckets}"
+          echo "all=${buckets}" >> "$GITHUB_OUTPUT"
+
+      - name: List sample files of Demo Bucket
+        env:
+          PROJECT_ID: "${{ steps.project.outputs.id }}"
+          BUCKETS: "${{ steps.buckets.outputs.all }}"
+        run: |
+          bucket=$(echo "$BUCKETS" | jq -r --arg pid "$PROJECT_ID" '.[] | select(startswith($pid))' | head -n 1)
+          if [ -z "$bucket" ]; then
+            echo "❌ No bucket found for project ${PROJECT_ID}. Is the Demo environment set up?"
+            exit 1
+          fi
+          files="$(gcloud storage objects list "gs://$bucket" --format json | jq -c '[.[].name]')"
+          echo "::notice title=Files_in_${bucket}::${files}"
