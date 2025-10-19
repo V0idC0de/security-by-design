@@ -39,4 +39,7 @@ USER $USERNAME
 WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 
+# Schreibe Hinweis auf Guide in GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/03-github-workflows" > /home/$USERNAME/GUIDE.md
+
 ENTRYPOINT ["/bin/bash"]

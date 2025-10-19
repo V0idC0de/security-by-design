@@ -32,4 +32,7 @@ ENV TERM=xterm-color
 RUN echo 'eval "$(gh completion -s bash)"' >> /home/$USERNAME/.bashrc
 RUN terraform -install-autocomplete
 
+# Schreibe Hinweis auf Guide in GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/04-terraform" > /home/$USERNAME/GUIDE.md
+
 ENTRYPOINT ["/bin/bash"]

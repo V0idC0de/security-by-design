@@ -37,4 +37,7 @@ RUN git config --global user.name "labuser" && \
 RUN terraform -install-autocomplete
 RUN echo 'eval "$(gh completion -s bash)"' >> /home/$USERNAME/.bashrc
 
+# Schreibe Hinweis auf Guide in GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/05-open-policy-agent" > /home/$USERNAME/GUIDE.md
+
 ENTRYPOINT ["/bin/bash"]

@@ -46,5 +46,9 @@ ENV TERM=xterm-color
 
 # ARGs können in ENTRYPOINTs nicht gut verwendet werden - daher nochmal als ENV
 ENV WEBSERVER_PATH=$WEBSERVER_PATH
+
+# Schreibe Hinweis auf Guide in GUIDE.md
+RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/01-git-hacking" > /home/$USERNAME/GUIDE.md
+
 # Starte Webserver + Shell
 ENTRYPOINT ["/bin/bash", "-c", "python ${WEBSERVER_PATH}/server.py 2>&1 > ${WEBSERVER_PATH}/server.log & exec bash"]
