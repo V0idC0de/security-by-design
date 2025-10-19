@@ -1,3 +1,8 @@
+# Ignore filled-out version of default variable files
 default.auto.tfvars.json
+
+# Keep the suspend-file, for convenient machine suspension
+!suspend.tfvars.json
+
 # Local .terraform directories
 **/.terraform/*
