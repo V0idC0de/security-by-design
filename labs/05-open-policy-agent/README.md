@@ -8,11 +8,12 @@
     - [4. Repository und Pull Request öffnen](#4-repository-und-pull-request-öffnen)
     - [5. GitHub Workflow beobachten](#5-github-workflow-beobachten)
     - [6. Analyse der Policy-Verletzungen](#6-analyse-der-policy-verletzungen)
-    - [7. Policy-Verletzungen beheben](#7-policy-verletzungen-beheben)
-      - [7.1 Fix via `git`](#71-fix-via-git)
-      - [7.2 Fix via GitHub-Website](#72-fix-via-github-website)
-    - [8. Erneute Workflow-Ausführung prüfen](#8-erneute-workflow-ausführung-prüfen)
-    - [9. Aufräumen](#9-aufräumen)
+    - [7. Prüfung der Policy-Dateien](#7-prüfung-der-policy-dateien)
+    - [8. Policy-Verletzungen beheben](#8-policy-verletzungen-beheben)
+      - [8.1 Fix via `git`](#81-fix-via-git)
+      - [8.2 Fix via GitHub-Website](#82-fix-via-github-website)
+    - [9. Erneute Workflow-Ausführung prüfen](#9-erneute-workflow-ausführung-prüfen)
+    - [10. Aufräumen](#10-aufräumen)
     - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
     - [Lokale Umgebung mit Docker](#lokale-umgebung-mit-docker)
@@ -69,7 +70,7 @@ export TF_VAR_github_token="$(gh auth token)"
 >
 > Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
 > Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
-> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 9](#9-aufräumen)).
+> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 10](#10-aufräumen)).
 
 ### 3. Terraform Plan ausführen
 
@@ -85,8 +86,9 @@ Nach erfolgreichem `terraform apply` findest du im Terraform Output die URL zum 
 
 ### 4. Repository und Pull Request öffnen
 
-Nutze den im Terraform Output angezeigten Link, um das neue Repository auf GitHub zu öffnen. Alternativ kannst du direkt zur Seite zum Erstellen eines Pull Requests springen.
-Erstelle im Repository einen Pull Request, um z.B. den Branch `feature/add-settings` in den Hauptbranch (`main`) zu mergen.
+Nutze den im Terraform Output angezeigten Link, um das neue Repository auf GitHub zu öffnen.
+Wähle oben den Tab **"Pull Requests** und erstelle im Repository dann einen Pull Request,
+um den Branch `feature/add-settings` in den Hauptbranch (`main`) zu mergen.
 
 > [!NOTE]
 > Das Anlegen des Pull Requests löst automatisch den hinterlegten GitHub Actions Workflow aus.
@@ -110,17 +112,30 @@ Falls du die Workflow-Seite bereits geöffnet hattest, musst du sie ggf. aktuali
 > Der Schritt `terraform plan` war erfolgreich, aber die Policy-Prüfung ist fehlgeschlagen.
 > So werden unerwünschte Änderungen frühzeitig erkannt und blockiert, selbst wenn der `terraform plan` an an sich gültig ist.
 
-### 7. Policy-Verletzungen beheben
+### 7. Prüfung der Policy-Dateien
+
+Sieh dir nun die Dateien im Ordner `/policy` des Repositories auf GitHub genauer an.
+
+Vollziehe die Absicht der Policy anhand ihres Codes nach.
+Die Dateien nutzen den sogenannten **Rego-Syntax** und fungieren als Filter für einen Input.
+Dieser Input ist in diesem Fall die geplanten Änderungen von **Terraform** im JSON-Format.
+Wenn der Filter im Input ein Ergebnis findet, wurde ein Policy-Verstoß erkannt.
+
+Es ist nicht erforderlich, den **Rego-Syntax** im Detail zu kennen, um die Grundzüge hier nachzuvollziehen.
+Es genügt völlig, wenn du die Stellen erkennst, an denen die entscheidenden Vergleiche gemacht werden.
+
+### 8. Policy-Verletzungen beheben
 
 Kehre zurück in die Laborumgebung und behebe die Policy-Verstöße.
 Dies kann mit `git` in der Konsole erledigt werden oder auf der GitHub-Website. Wähle **einen** der beiden Wege.
 
-#### 7.1 Fix via `git`
+#### 8.1 Fix via `git`
 
 Kehre in die Laborumgebung zurück und wechsle mit `cd` (ohne Parameter) ins Home-Verzeichnis.
 Klone dann das GitHub-Repository, das eben erstellt wurde.
 
 ```bash
+cd
 gh repo clone demo-open-policy-agent
 cd demo-open-policy-agent
 ```
@@ -155,18 +170,18 @@ git commit -m "fix: Policy"
 git push
 ```
 
-#### 7.2 Fix via GitHub-Website
+#### 8.2 Fix via GitHub-Website
 
 // TODO
 
-### 8. Erneute Workflow-Ausführung prüfen
+### 9. Erneute Workflow-Ausführung prüfen
 
 Kehre zum Pull Request zurück, wo der GitHub Workflow durch den Push der Änderungen erneut ausgeführt werden sollte.
 Eventuell muss die Website des Pull Requests aktualisiert werden, um die erneute Ausführung anzuzeigen.
 
 Diesmal sollte der Workflow erfolgreich durchlaufen. Merge den Pull Request zum Abschluss - der Workflow wird die Änderungen nicht wirklich anwenden.
 
-### 9. Aufräumen
+### 10. Aufräumen
 
 Um kein verwaistes Repository zurückzulassen, räume die Ressourcen wieder auf, indem du das folgende Kommando im `terraform`-Ordner ausführst:
 

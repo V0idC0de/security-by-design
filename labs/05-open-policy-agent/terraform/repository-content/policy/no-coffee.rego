@@ -2,18 +2,19 @@ package github
 
 import rego.v1
 
-# This policy denies Terraform plans that include repositories with "coffee" in their name
+# Diese Policy verweigert Terraform-Pläne, die Repositories mit "coffee" im Namen enthalten
+
 deny contains msg if {
-    # Get all resources of type github_repository
+    # Hole alle Änderungen an Ressourcen vom Typ github_repository
     resource := input.resource_changes[_]
     resource.type == "github_repository"
 
-    # Check if "coffee" is in the repository name (case insensitive)
+    # Prüfe, ob "coffee" im Repository-Namen enthalten ist (Groß-/Kleinschreibung wird per "lower()" ignoriert)
     contains(lower(resource.change.after.name), "coffee")
 
-    # Create denial message
+    # Erstelle eine Fehlermeldung
     msg := sprintf(
-        "Repository '%s' contains the word 'coffee' which is not allowed",
+        "Repository '%s' enthält das Wort 'coffee', was nicht erlaubt ist",
         [resource.change.after.name]
     )
 }
