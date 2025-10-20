@@ -9,6 +9,7 @@
     - [5. `pre-commit` konfigurieren](#5-pre-commit-konfigurieren)
     - [6. Neue Dateien committen](#6-neue-dateien-committen)
     - [7. Fehler korrigieren](#7-fehler-korrigieren)
+    - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
     - [1. Klone das Repository](#1-klone-das-repository)
     - [2. Baue den Container](#2-baue-den-container)
@@ -159,6 +160,16 @@ git log
 > [!NOTE]
 > Sollte einer der Hooks erneut einen Formatierungsfehler o.Ä. finden, hat er ihn wahrscheinlich auch schon behoben.
 > Wiederhole dann einfach `git add .` und `git commit -m 'Add code'`, um die Korrekturen hinzuzufügen und erneut zu committen.
+
+### Abschluss
+
+In diesem Lab hast du die Anwendung von **pre-commit Hooke** gesehen und wie diese einfach über das Tool `pre-commit` genutzt werden können.
+Du hast außerdem den **Secret Scanner "TruffleHog"** genutzt, um automatisiert Secret im Code aufzuspüren und ihren Commit zu verhindern.
+
+So können Security-Tools ohne Mehraufwand in den Entwicklungsprozess integriert werden. `pre-commit` kann dabei auch Aufgaben übernehmen,
+die nicht direkt der Security dienen und ist daher auch für die sonstige Entwicklung ein nützliches Werkzeug.
+
+Aufgeräumt werden muss in diesem Lab nichts.
 
 ## Lokale Umgebung bauen
 
