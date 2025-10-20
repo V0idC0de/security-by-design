@@ -68,7 +68,12 @@ jobs:
 
       - name: Build Docker Image
         working-directory: ${{ matrix.dir }}
-        run: docker build -t "$IMAGE_NAME" .
+        run: |
+          if [[ -f Dockerfile ]]; then
+            docker build -t "$IMAGE_NAME" .
+          else
+            echo "ℹ️ No Dockerfile found in directory ${{ matrix.dir }} - skipping!"
+          fi
 
       - name: Run Container
         run: |
