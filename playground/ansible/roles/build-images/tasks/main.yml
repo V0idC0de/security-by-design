@@ -42,6 +42,7 @@
     name: "{{ item.image_name }}"
     tag: latest
     source: build
+    force_source: "{{ force_build or repo_clone.changed }}"
     build:
       path: "{{ item.parent_dir }}"
   register: build_jobs

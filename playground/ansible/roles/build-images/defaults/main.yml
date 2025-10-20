@@ -7,3 +7,4 @@ repo_dest: "/home/{{ ansible_user }}/security-by-design"
 docker_parent_dirs:
   - labs
   - demos
+force_build: false
