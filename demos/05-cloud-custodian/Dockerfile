@@ -50,5 +50,7 @@ RUN pipx ensurepath \
 
 # Schreibe Hinweis auf Guide in GUIDE.md
 RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/demos/05-cloud-custodian" > /home/$USERNAME/GUIDE.md
+# Setze Alias zum schnellen Anzeigen des Doku-Links
+RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
 
 ENTRYPOINT ["/bin/bash"]
