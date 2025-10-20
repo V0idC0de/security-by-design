@@ -49,4 +49,7 @@ ENV TERM=xterm-color
 
 # Schreibe Hinweis auf Guide in GUIDE.md
 RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/00-id-tokens" > /home/$USERNAME/GUIDE.md
+# Setze Alias zum schnellen Anzeigen des Doku-Links
+RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
+
 ENTRYPOINT ["/bin/bash"]

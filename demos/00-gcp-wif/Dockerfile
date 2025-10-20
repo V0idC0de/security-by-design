@@ -44,5 +44,7 @@ RUN echo 'source /home/labuser/.local/gcloud/completion.bash.inc' >> /home/$USER
 
 # Schreibe Hinweis auf Guide in GUIDE.md
 RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/demos/00-gcp-wif" > /home/$USERNAME/GUIDE.md
+# Setze Alias zum schnellen Anzeigen des Doku-Links
+RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
 
 ENTRYPOINT ["/bin/bash"]
