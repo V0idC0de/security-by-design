@@ -79,10 +79,10 @@ So würde Terraform in einer automatisierten Umgebung typischerweise ausgeführt
 ### 3. Terraform mit Variablen-Datei ausführen
 
 ```bash
-# Betrachte die Input-Variablen
+# Betrachte die akzeptieren Variablen
 less variables.tf
 
-# Betrachte den Input des ersten Inputs
+# Betrachte die Inputs, die Terraform gleich übergeben werden
 less inputs/sample.1.tfvars.json
 
 # (Optional) Finde mit einer kurzen Suche die Orte,
@@ -90,7 +90,7 @@ less inputs/sample.1.tfvars.json
 # Vollziehe diese Verwendung nach.
 grep -F -C 5 'var.' *.tf
 
-# Führe Terraform Plan mit einer Variablen-Datei aus
+# Führe Terraform Plan mit einer Variablen-Datei als Input aus
 terraform plan -var-file inputs/sample.1.tfvars.json
 ```
 
@@ -195,17 +195,19 @@ terraform destroy -var-file inputs/sample.3.tfvars.json
 
 ### Abschluss
 
-Die Demonstration zeigte, wie Terraform Input-Variablen und Konfigurtionen in echte Infrastruktur verwandet.
-Ebenso wird auf Änderungen der Infrastruktur oder gewünschen Konfiguration reagiert.
+In diesem Lab hast du gesehen, wie Terraform seine Konfiguration, zusammen mit Input-Variablen, in echte Infrastruktur verwandelt.
+Ebenso wird auf Änderungen in existierender Infrastruktur oder der gewünschen Konfiguration reagiert.
 
-Beachte im letzten Schritt beim Abbau besonders, wie Terraform zuverlässig und vollständig alle verwalteten Ressourcen
-zerstört. Übertrage dies auf ein praktisches Szenario, in dem z.B. Infrastruktur für eine Webapplikation erstellt wird und verschiedene Ressourcen wie Storage Buckets, Domainnamen, Domain-Einträge, IP-Adressen, Firewall-Regeln und ähnliche Ressourcen angelegt werden.
+Beachte im letzten Schritt beim Abbau besonders, wie Terraform zuverlässig und vollständig alle verwalteten Ressourcen zerstört.
+Übertrage dies auf ein praktisches Szenario, in dem z.B. Infrastruktur für eine Webapplikation erstellt wird und
+verschiedene Ressourcen wie Storage Buckets, Domainnamen, Domain-Einträge, IP-Adressen, Firewall-Regeln und ähnliche Ressourcen angelegt werden.
 
 Ohne ein Tool wie Terraform ist es schwierig, diese Ressourcen korrekt einzeln abzubauen und
 logische Verbindungen zwischen Werten in der Konfiguration akkurat abzubilden.
 Manuell gepflegte Listen veralten schnell führen schnell dazu, dass einige dieser Ressourcen in einem schwer
 zu wartenden "Shadow-IT"-Dasein verschwinden.
-Terraform schließt diese Lücke durch eine zentrale und überprüfbare Verwaltung der Ressourcen und kann zuverlässig Änderungen an mehreren Ressourcen vornehmen bzw. sie zerstören, wenn die gewünschte Konfiguration dies erfordert.
+Terraform schließt diese Lücke durch eine zentrale und überprüfbare Verwaltung der Ressourcen und
+kann zuverlässig Änderungen an mehreren Ressourcen vornehmen bzw. sie zerstören, wenn die gewünschte Konfiguration dies erfordert.
 
 ## Lokale Umgebung bauen
 
