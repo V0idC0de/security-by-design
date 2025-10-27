@@ -54,7 +54,7 @@ Folge den Schritten in [GitHub Login](/github-login.md).
 ### 3. Terraform Plan ausführen
 
 ```bash
-# Initialisiere das Repository einmalig
+# Initialisiere Terraform einmalig
 terraform init
 
 # Führe Terraform Plan ohne Argumente aus
@@ -138,15 +138,15 @@ terraform plan -var-file inputs/sample.3.tfvars.json
 
 Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
 
-Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
+Einige Ressourcen, wie der Default-Branch-Name, der von `main`/`master` zu `production` wechselt,
 sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
 
-> [!WARNING]
-> Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
-> Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieben - sie sind **immutable**.
-> Terraform kommentiert das mit **"forces replacement"** und zeigt damit an, dass diese Dateiobjekte zerstört
-> und neu erstellt werden müssen, um den Zielzustand zu erreichen.
-> Eine Ressource, die zerstört und neu erstellt wird, ist eine potenziell destruktive Aktion und sollte mit Vorsicht durchgeführt werden.
+Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
+Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieben - sie sind **immutable**.
+Terraform kommentiert das mit **"forces replacement"** und zeigt damit an, dass diese Dateiobjekte zerstört
+und neu erstellt werden müssen, um den Zielzustand zu erreichen.
+
+Eine Ressource, die zerstört und neu erstellt wird, ist **eine potenziell destruktive Aktion** und sollte mit Vorsicht durchgeführt werden.
 
 ```bash
 terraform apply -var-file inputs/sample.3.tfvars.json
