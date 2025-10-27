@@ -1,42 +1,33 @@
 resource "github_repository" "workflow_lab" {
   name = var.repository_name
 
-  # Visibility should be private, since a Secret contains the user's PAT
-  visibility             = "private"
-  auto_init              = true # Initialisiert mit README, wichtig für Branch Creation
+  # "public" Visibility ist notwendig, um die Branch Protection nutzen zu können,
+  # wenn der Nutzer einen GitHub Free Account hat - andersfalls sind die deaktiviert.
+  visibility = "public"
+  auto_init  = true # Initialisiert mit README, wichtig für Branch Creation
+
   delete_branch_on_merge = true
-
-  has_discussions = false
-  has_downloads   = false
-  has_issues      = false
-  has_projects    = false
-  has_wiki        = false
+  has_discussions        = false
+  has_downloads          = false
+  has_issues             = false
+  has_projects           = false
+  has_wiki               = false
 }
 
-resource "github_branch_default" "default" {
-  repository = github_repository.workflow_lab.name
-  branch     = "main"
-  rename     = true
+resource "github_branch_protection" "default" {
+  repository_id = github_repository.workflow_lab.node_id
+  pattern       = github_repository.workflow_lab.default_branch
+
+  allows_force_pushes = false
+  allows_deletions    = false
+  enforce_admins      = true
+
+  required_status_checks {
+    strict   = true
+    contexts = sort(local.ci_jobs)
+  }
+  depends_on = [github_repository_file.main]
 }
-
-### Branch Protection doesn't work in GitHub Free with Private Repositories.
-### But since a GitHub PAT is being set as a Secret, it's better to leave the Repo private.
-### It doesn't hurt the demo, because Refusing Merges was showcased in Demo "00-github-workflows".
-
-# resource "github_branch_protection" "default" {
-#   repository_id = github_repository.workflow_lab.node_id
-#   pattern       = github_branch_default.default.branch
-# 
-#   allows_force_pushes = false
-#   allows_deletions    = false
-#   enforce_admins      = true
-# 
-#   required_status_checks {
-#     strict   = true
-#     contexts = sort(local.ci_jobs)
-#   }
-#   depends_on = [github_repository_file.main]
-# }
 
 resource "github_actions_secret" "GITHUB_PAT" {
   repository      = github_repository.workflow_lab.name
@@ -46,8 +37,8 @@ resource "github_actions_secret" "GITHUB_PAT" {
 locals {
   # As people might fiddle with the inner Terraform code contained in `repository-content`,
   # it's better to explicitly define the files we want to upload.
-  # Otherwise, people may accidentially place files in that `repository-content` directory,
-  # which are then accidentially uploaded to GitHub.
+  # Otherwise, people may place files in that `repository-content` directory,
+  # which are then accidentally uploaded to GitHub.
   files_to_upload = [
     ".github/workflows/ci.yml",
     "policy/no-coffee.rego",
@@ -70,7 +61,7 @@ locals {
 resource "github_repository_file" "main" {
   for_each   = local.repo_files
   repository = github_repository.workflow_lab.name
-  branch     = github_branch_default.default.branch
+  branch     = github_repository.workflow_lab.default_branch
   file       = each.key
   # Commit empty `repositories.yaml` at first - then commit a change with its actual content to different branch
   content             = each.key == "settings.yaml" ? "" : file(each.value)
@@ -87,7 +78,7 @@ resource "github_repository_file" "feature_branch" {
   repository                      = github_repository.workflow_lab.name
   branch                          = var.branch_name
   autocreate_branch               = true
-  autocreate_branch_source_branch = github_branch_default.default.branch
+  autocreate_branch_source_branch = github_repository.workflow_lab.default_branch
 
   file                = each.key
   content             = file(each.value)
@@ -96,5 +87,6 @@ resource "github_repository_file" "feature_branch" {
   commit_email        = "terraform@localhost"
   overwrite_on_create = true
 
+  # Ensure that this runs after the initial commit to the default branch
   depends_on = [github_repository_file.main]
 }
