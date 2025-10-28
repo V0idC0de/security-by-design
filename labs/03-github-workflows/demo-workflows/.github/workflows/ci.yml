@@ -3,8 +3,6 @@ name: Repository Content CI
 
 on:
   pull_request:
-    branches:
-      - main
     types:
       - opened
       - synchronize
