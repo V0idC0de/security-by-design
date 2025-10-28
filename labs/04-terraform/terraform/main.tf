@@ -4,13 +4,13 @@ data "github_user" "me" {
 }
 
 resource "github_repository" "lab_repo" {
+  # Ein GitHub Repository für jedes Element der Liste
   for_each = toset(var.repository_names)
 
   name        = each.value
   description = "Created via Terraform by ${data.github_user.me.login} (${data.github_user.me.id})"
-
-  visibility = "public"
-  auto_init  = true # Initialisiert mit README, wichtig für Branch Creation
+  visibility  = "public"
+  auto_init   = true # Initialisiert mit README, wichtig für Branch Creation
 
   has_discussions = false
   has_downloads   = false
@@ -19,7 +19,8 @@ resource "github_repository" "lab_repo" {
   has_wiki        = false
 }
 
-resource "github_branch_default" "default" {
+# Setze den Default Branch für jedes Repository
+resource "github_branch_default" "lab_repo" {
   for_each = toset(var.repository_names)
 
   repository = github_repository.lab_repo[each.value].name
@@ -60,17 +61,16 @@ locals {
 # Benutze hier die erstelle Map mit Einträgen für jede Datei
 # in jedem Repository. Nutze das Objekt in `each.value` um
 # auf die beiden Werte zuzugreifen.
-# Keys für Maps, aus denen via `for_each` Ressourcen werden,
+# Keys der Map, die mit `for_each` verwendet werden,
 # MÜSSEN Zahlen oder Strings sein und dürfen keine Duplikate enthalten.
 resource "github_repository_file" "lab_file" {
   for_each = local.files_in_repos
 
   repository = github_repository.lab_repo[each.value.repo].name
-  branch     = github_branch_default.default[each.value.repo].branch
+  branch     = github_branch_default.lab_repo[each.value.repo].branch
   file       = each.value.file
   content    = "Copyright by ${data.github_user.me.login}"
 
-  commit_message      = "Add ${each.value.file}"
   commit_author       = "Terraform"
   commit_email        = "terraform@localhost"
   overwrite_on_create = true

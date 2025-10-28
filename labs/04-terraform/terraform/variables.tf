@@ -15,5 +15,5 @@ variable "default_branch" {
   description = "The default branch for the repository."
   type        = string
   nullable    = false
-  default     = "main"
+  default     = "development"
 }
