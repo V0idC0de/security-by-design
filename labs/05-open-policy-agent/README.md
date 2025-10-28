@@ -68,17 +68,20 @@ export TF_VAR_github_token="$(gh auth token)"
 > Zwar lassen sich Secrets nicht von Personen mit Lesezugriff auslesen, doch wer Schreibzugriff auf
 > das Repository hat, kann Workflows nutzen, um das Token im Klartext zu erlangen.
 >
-> Das Repository wird mit `visibility = "private"` angelegt, sodass standardmäßig niemand Zugriff hat.
-> Bedenke aber, dass jeder mit Schreibzugriff dein GitHub PAT auslesen kann. Zerstöre das GitHub Repository
-> daher sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 10](#10-aufräumen)).
+> Das Repository wird mit `visibility = "public"` angelegt, doch das Token wird dadurch **nicht** öffentlich sichtbar.
+> Zerstöre das GitHub Repository dennoch sicherheitshalber mit `terraform destroy`, sobald du fertig bist (siehe [Schritt 10](#10-aufräumen)).
 
 ### 3. Terraform Plan ausführen
+
+Terraform wird in diesem Schritt nur genutzt, um die nötige Infrastruktur in GitHub aufzubauen.
+Es nicht nicht nötig, alle Ressourcen in diesem Schritt nachzuvollziehen - du kannst es natürlich trotzdem tun.
 
 ```bash
 # Initialisiere das Repository einmalig
 terraform init
 
 # Wende den Plan an, um das Repository zu erstellen.
+# Die Warnung "Deprecated attribute" kann ignoriert werden - sie stört uns nicht beim Lab.
 terraform apply
 ```
 
@@ -88,7 +91,7 @@ Nach erfolgreichem `terraform apply` findest du im Terraform Output die URL zum 
 
 Nutze den im Terraform Output angezeigten Link, um das neue Repository auf GitHub zu öffnen.
 Wähle oben den Tab **"Pull Requests** und erstelle im Repository dann einen Pull Request,
-um den Branch `feature/add-settings` in den Hauptbranch (`main`) zu mergen.
+um den Branch `feature/add-repositories` in den Hauptbranch (`main`/`master`) zu mergen.
 
 > [!NOTE]
 > Das Anlegen des Pull Requests löst automatisch den hinterlegten GitHub Actions Workflow aus.
@@ -96,15 +99,21 @@ um den Branch `feature/add-settings` in den Hauptbranch (`main`) zu mergen.
 
 ### 5. GitHub Workflow beobachten
 
-Klicke am unteren Ende des Pull Requests auf den aktiven **Workflow Run** und beobachte die Ausführung des Workflows.
-Der Workflow führt einen `terraform plan` aus und prüft das Ergebnis mit **Open Policy Agent** `conftest` gegen die im Repository abgelegten Policies (siehe `/policy/*.rego`).
+Scrolle zum unteren Ende des Pull Requests und beobachte die Ausführung des **Workflow Run**s `Terraform Plan`.
+Der Workflow führt einen `terraform plan` aus und prüft das Ergebnis mit dem Tool `conftest` gegen
+die im Repository abgelegten Policies (siehe `/policy/*.rego`).
 
 > [!WARNING]
 > Der Workflow wird fehlschlagen, da wir Änderungen haben, die gegen eine Policy verstoßen.
+> Merke hierbei auch, dass der Button **Merge pull request** deaktiviert ist, da dieser Workflow
+> erfolgreich sein **muss**, bevor gemerged werden darf! Dies ist von einer **Branch Protection** festgelegt worden.
+
+Hinweis: `conftest` ist eine kompaktere von des Haupt-Tools **Open Policy Agent**.
 
 ### 6. Analyse der Policy-Verletzungen
 
-Klicke auf den fehlgeschlagenen Workflow am unteren Ende des Pull Requests.
+Klicke auf den fehlgeschlagenen Workflow am unteren Ende des Pull Requests, um die Details der Ausführung zu sehen.
+
 Am oberen Ende des **Workflow Runs** des Logs werden **Annotationen** angezeigt, die die Policy-Verstöße übersichtlich auflisten.
 Falls du die Workflow-Seite bereits geöffnet hattest, musst du sie ggf. aktualisieren, da sie vom späten Schritt `Run OPA Policy Check` geschrieben werden.
 
@@ -114,20 +123,27 @@ Falls du die Workflow-Seite bereits geöffnet hattest, musst du sie ggf. aktuali
 
 ### 7. Prüfung der Policy-Dateien
 
-Sieh dir nun die Dateien im Ordner `/policy` des Repositories auf GitHub genauer an.
-
+Sieh dir nun auf der GitHub-Website deines Repositories die Dateien im Ordner `/policy` genauer an.
 Vollziehe die Absicht der Policy anhand ihres Codes nach.
+
 Die Dateien nutzen den sogenannten **Rego-Syntax** und fungieren als Filter für einen Input.
-Dieser Input ist in diesem Fall die geplanten Änderungen von **Terraform** im JSON-Format.
+Dieser Input ist in diesem Fall eine Auflistung der geplanten Änderungen von **Terraform** im JSON-Format.
 Wenn der Filter im Input ein Ergebnis findet, wurde ein Policy-Verstoß erkannt.
 
 Es ist nicht erforderlich, den **Rego-Syntax** im Detail zu kennen, um die Grundzüge hier nachzuvollziehen.
 Es genügt völlig, wenn du die Stellen erkennst, an denen die entscheidenden Vergleiche gemacht werden.
 
+> [!NOTE]
+> (Optional) In der Datei `.github/workflows/ci.yml` kann in Zeile 39-40 und Zeile 48 nachvollzogen werden,
+> wie `conftest` aufgerufen wird und wie man einen `terraform plan` im JSON-Format erhält.
+> Dies kann auch für andere Automatisierungen praktisch sein, z.B. um Change-Tickets zu erstellen,
+> wenn bestimmte Ressourcen(-Typen) verändert werden oder destruktive Aktionen geplant sind.
+
 ### 8. Policy-Verletzungen beheben
 
 Kehre zurück in die Laborumgebung und behebe die Policy-Verstöße.
-Dies kann mit `git` in der Konsole erledigt werden oder auf der GitHub-Website. Wähle **einen** der beiden Wege.
+Dies kann mit `git` in der Konsole erledigt werden oder auf der GitHub-Website.
+Wähle **einen** der beiden Wege, die im Folgenden beschrieben sind.
 
 #### 8.1 Fix via `git`
 
@@ -156,6 +172,8 @@ nano main.tf
 
 Um den Repository-Namen zu beheben, sehen wir in die `settings.yaml` Datei.
 Behebe dort das verbotene Wort `coffee` im Repository-Namen und ersetze es durch etwas anderes.
+Nutze für den ersatz nur Buchstaben, Zahlen und Bindestriche.
+Da dies der Repository-Name wird, sollten keine dafür ungültigen Zeichen enthalten sein.
 
 ```bash
 nano settings.yaml
@@ -179,7 +197,10 @@ git push
 Kehre zum Pull Request zurück, wo der GitHub Workflow durch den Push der Änderungen erneut ausgeführt werden sollte.
 Eventuell muss die Website des Pull Requests aktualisiert werden, um die erneute Ausführung anzuzeigen.
 
-Diesmal sollte der Workflow erfolgreich durchlaufen. Merge den Pull Request zum Abschluss - der Workflow wird die Änderungen nicht wirklich anwenden.
+Diesmal sollte der Workflow erfolgreich durchlaufen, wenn alle Fehler korrekt behoben wurden.
+Merke, wie der Button **Merge pull request** nun aktiv wird, nachdem der Workflow erfolgreich beendet wurde.
+
+Merge den Pull Request zum Abschluss - der Workflow wird die Änderungen nicht wirklich anwenden, da er keinen `terraform apply` enthält.
 
 ### 10. Aufräumen
 
