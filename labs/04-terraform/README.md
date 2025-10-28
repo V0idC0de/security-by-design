@@ -54,7 +54,7 @@ Folge den Schritten in [GitHub Login](/github-login.md).
 ### 3. Terraform Plan ausführen
 
 ```bash
-# Initialisiere das Repository einmalig
+# Initialisiere Terraform einmalig
 terraform init
 
 # Führe Terraform Plan ohne Argumente aus
@@ -80,14 +80,15 @@ So würde Terraform in einer automatisierten Umgebung typischerweise ausgeführt
 
 ```bash
 # Betrachte die akzeptieren Variablen
-less variables.tf
+bat variables.tf
 
 # Betrachte die Inputs, die Terraform gleich übergeben werden
-less inputs/sample.1.tfvars.json
+bat inputs/sample.1.tfvars.json
 
 # (Optional) Finde mit einer kurzen Suche die Orte,
 # an denen die Variablen mit `var.VARNAME` verwendet werden.
-# Vollziehe diese Verwendung nach.
+# Mache dir kurz Gedanken zum Zweck der Verwendung und auch dazu,
+# warum die Nutzung von Variablen hier gegenüber statischer Werte sinnvoll ist.
 grep -F -C 5 'var.' *.tf
 
 # Führe Terraform Plan mit einer Variablen-Datei als Input aus
@@ -121,7 +122,7 @@ wo die URLs der Repositories schnell einsehbar sind.
 
 ```bash
 # Betrachte die Unterschiede zwischen den Input-Dateien
-diff inputs/sample.1.tfvars.json inputs/sample.2.tfvars.json
+icdiff inputs/sample.1.tfvars.json inputs/sample.2.tfvars.json
 
 terraform apply -var-file inputs/sample.2.tfvars.json
 ```
@@ -132,21 +133,35 @@ Terraform ermittelt diese Unterschiede selbstständig.
 
 ### 6. Default Branch ändern
 
+Betrachte die Änderungen der nächsten Input-Datei.
+
+```bash
+icdiff inputs/sample.2.tfvars.json inputs/sample.3.tfvars.json
+```
+
+Lasse Terraform einen Plan erarbeiten, der alle Folgen dieser Änderung zeigt.
+
 ```bash
 terraform plan -var-file inputs/sample.3.tfvars.json
 ```
 
 Beachte, dass der Plan mehrere Änderungen an verschiedenen Ressourcen enthält, obwohl wir nur eine Eingabevariable geändert haben. Dies zeigt, wie Terraform korrekt alle Variablen und Querverweise innerhalb der Konfiguration neu bewertet und erkennt, welche Attribute sich aufgrund einer Eingabeänderung ändern.
 
-Einige Ressourcen, wie der Default-Branch-Name, der von `main` zu `production` wechselt,
-sind sogenannte "in-place updates". Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
+Einige Ressourcen, wie der Default-Branch-Name, der von `development` zu `production` wechselt,
+sind sogenannte **"in-place updates"**. Dabei wird die bestehende Ressource verändert, ohne sie neu zu erstellen.
+Siehe zum Beispiel die Ressource `github_branch_default.lab_repo["coffee-app"]`.
 
-> [!WARNING]
-> Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
-> Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieben - sie sind **immutable**.
-> Terraform kommentiert das mit **"forces replacement"** und zeigt damit an, dass diese Dateiobjekte zerstört
-> und neu erstellt werden müssen, um den Zielzustand zu erreichen.
-> Eine Ressource, die zerstört und neu erstellt wird, ist eine potenziell destruktive Aktion und sollte mit Vorsicht durchgeführt werden.
+Die Dateien im Repository müssten auf den neuen Branch `production` verschoben werden.
+Auf GitHub lassen sich Dateiobjekte allerdings nicht mehr verschieben - sie sind **immutable**.
+Terraform kommentiert das mit **"forces replacement"** und zeigt damit an, dass diese Dateiobjekte zerstört
+und neu erstellt werden müssen, um den Zielzustand zu erreichen.
+
+>[!WARNING]
+> Eine Ressource, die zerstört und neu erstellt wird, ist **eine potenziell destruktive Aktion** und sollte mit Vorsicht durchgeführt werden.
+> Zustandslose Ressourcen, wie z.B. eine Berechtigungszuweisung können problemlos gelöscht und erneut erstellt werden.
+> Im Gegensatz dazu können z.B. erstellte Branches oder (außerhalb GitHub) ein von Terraform erstellter Ordner für Backups
+> auch Daten enthalten, die Terraform implizit ebenfalls zerstören würde.
+> Eine Neuerstellung würde diese nicht wiederherstellen - also Vorsicht, wenn Terraform `..., 1 to destroy` (oder mehr) im Plan anzeigt!
 
 ```bash
 terraform apply -var-file inputs/sample.3.tfvars.json
@@ -157,7 +172,7 @@ Besuche GitHub und überprüfe, dass die Default-Branch-Namen geändert wurden.
 ### 7. Manuelle Änderungen und State Drift demonstrieren
 
 1. Gehe zu einem der Repositories auf GitHub (nutze `terraform output` um schnell die URLs zu sehen)
-2. Bearbeite eine von Terraform verwaltete Datei (`SECURITY.md` oder `LICENSE.md`), z.B. über den GitHub-Editor
+2. Bearbeite eine von Terraform verwaltete Datei (`SECURITY.md` oder `LICENSE.md`, nicht aber `README.md`!), z.B. über den [GitHub-Editor](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files#editing-files-in-your-repository)
 3. Ändere den Inhalt und committe die Änderung direkt auf den `production` Branch
 
 Führe jetzt Terraform erneut aus:
@@ -180,8 +195,7 @@ terraform apply -var-file inputs/sample.3.tfvars.json
 terraform apply -var-file inputs/sample.3.tfvars.json
 ```
 
-> [!NOTE]
-> Beachte, dass Terraform einen Plan ohne Änderungen liefert, da alles wie in der Konfiguration beschrieben existiert. > Dies zeigt die Idempotenz von Terraform - wiederholte Ausführungen führen zum gleichen Ergebnis,
+Terraform liefert hier einen Plan ohne Änderungen liefert, da alles wie in der Konfiguration beschrieben existiert. > Dies zeigt die Idempotenz von Terraform - wiederholte Ausführungen führen zum gleichen Ergebnis,
 > statt Ressourcen doppelt zu erstellen, o.Ä.
 
 ### 9. Infrastruktur abbauen
