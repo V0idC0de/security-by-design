@@ -56,7 +56,6 @@ Folge den Schritten in [GitHub Login](/github-login.md).
 ### 3. Repository erstellen
 
 ```bash
-cd demo-workflows
 # Lokales Git Repository initialisieren
 git init
 # Ersten Commit ins Repository schreiben
@@ -76,7 +75,7 @@ Dieser Workflow wird ausgeführt, wenn ein neuer Pull Request im Repository geö
 (siehe Objekt `on:`).
 
 In jedem Schritt des Workflows geben die Zeilen mit `run:` oder `uses:` an, welche Aktivität durchzuführen ist.
-`run:` führt ein Kommendo in einer Shell direkt aus und `uses:` importiert eine fertige Aktion und führt sie aus,
+`run:` führt ein Kommando in einer Shell direkt aus und `uses:` importiert eine fertige Aktion und führt sie aus,
 wobei diese Action-Namen schlicht Repositories auf GitHub sind.
 
 - **(Optional)** Versuche zu ermitteln, was diese einzelnen Schritte tun und welchen Zweck sie erfüllen.
@@ -116,10 +115,13 @@ Erstelle einen Pull Request, um den neuen Branch in den `main` Branch zu mergen.
 
 1. Klicke auf **"Pull requests"** in deinem Repository
 2. Klicke auf **"New pull request"**
-3. Wähle die erstellte Branch als Source und `main` als Target
+3. Wähle den erstellten Branch als Source und `main` als Target
 4. Erstelle den Pull Request
 
 ### 7. GitHub Actions beobachten
+
+> [!WARNING]
+> Klicke in diesem Schritt noch **nicht** den Button für das Mergen den Pull Requests!
 
 Nach dem Erstellen des Pull Requests:
 
