@@ -59,4 +59,10 @@ resource "google_compute_instance" "container-host" {
     # https://cloud.google.com/compute/docs/metadata/predefined-metadata-keys#project-attributes-metadata
     "ssh-keys" = "${var.machine.username}:${tls_private_key.ssh.public_key_openssh}"
   }
+
+  # Prevent machine from being recreated if only the image changes
+  # TODO: Setup proper boot disk management, so this is more interchangeable
+  lifecycle {
+    ignore_changes = [boot_disk[0].initialize_params[0].image]
+  }
 }
