@@ -1,6 +1,6 @@
-# 00 Pre-Commit
+# 02 Pre-Commit
 
-- [00 Pre-Commit](#00-pre-commit)
+- [02 Pre-Commit](#02-pre-commit)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
     - [2. Untersuche das Git-Repository](#2-untersuche-das-git-repository)
