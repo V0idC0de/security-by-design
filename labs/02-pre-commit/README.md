@@ -194,7 +194,7 @@ cd security-by-design/labs/02-pre-commit
 ```
 
 ```bash
-docker build -t labs/pre-commit-hooks .
+docker build -t labs/02-pre-commit .
 ```
 
 ### 3. Starten des Containers
