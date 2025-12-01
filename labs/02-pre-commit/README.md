@@ -1,6 +1,6 @@
-# 00 Pre-Commit
+# 02 Pre-Commit
 
-- [00 Pre-Commit](#00-pre-commit)
+- [02 Pre-Commit](#02-pre-commit)
   - [Durchführung](#durchführung)
     - [1. Betrachte das Setup im Container](#1-betrachte-das-setup-im-container)
     - [2. Untersuche das Git-Repository](#2-untersuche-das-git-repository)
@@ -194,7 +194,7 @@ cd security-by-design/labs/02-pre-commit
 ```
 
 ```bash
-docker build -t labs/pre-commit-hooks .
+docker build -t labs/02-pre-commit .
 ```
 
 ### 3. Starten des Containers
