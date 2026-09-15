@@ -1,28 +1,111 @@
-# Building and Running Docker Images
+# Docker Images bauen und ausführen
 
-Demonstration für das Bauen und Ausführen von Docker Images.
+Diese Demo zeigt, wie ein Docker Image aus einem `Dockerfile` gebaut und anschließend als Container
+ausgeführt wird. Dabei werden außerdem Port-Weiterleitungen und Umgebungsvariablen betrachtet.
 
-## Vorbereitung
+## Voraussetzungen
 
-- Docker muss installiert sein
-- Linux ist das Betriebssystem
+- Docker muss installiert sein ([Installation](https://docs.docker.com/engine/install/)).
+- Docker Compose muss verfügbar sein (`docker compose`).
+- Linux wird als Betriebssystem verwendet.
 
 ## Durchführung
 
-1. Zeige die `app.py`, die unsere App darstellt
-2. Zeige den `Dockerfile` und erläutere die Schritte zum Build-Prozess
-3. `docker build -t demos/images:latest .`
-4. `docker images` zum zeigen des neu gebauten Image
-5. `docker compose up` zum Starten des Containers
-6. `docker ps` zum zeigen des laufenden Containers
-7. Auf dem Host: `curl http://127.0.0.1:8000` - es demonstriert, dass die Interfaces des Containers, speziell sein `localhost` nicht identisch mit dem des Hosts ist.
-8. `sudo netstat -tulpn | grep -i docker` um den `docker-proxy` zu zeigen
-9. `curl http://127.0.0.1:9999` (wie in `docker-compose.yaml` spezifiziert) zeigt dann die erwartete Antwort
-10. `docker stop` auf die Container-Instanz stoppt den Prozess -> Seite nichtmehr erreichbar
-11. `watch -n 0.5 curl http://127.0.0.1:9999` um den Container in einem Panel zu beobachten und die Startgeschwindigkeit zu zeigen
-12. `docker start` startet die Instanz wieder - Container lassen sich sehr schnell stoppen und starten
-13. Verändere `docker-compose.yaml`, sodass `GREETED` fehlt und führe `docker compose up` nochmal aus
-14. Erneutes `curl http://127.0.0.1:9999`, um `Hello Students` zu zeigen
-    1. Verweis auf das fehlen eines Standardwertes in `app.py`, sodass dieser Standardwert für die Umgebungsvaraible aus dem `Dockerfile` kommt
-15. Container stoppen und entfernen
-16. `docker run --rm --publish 9999:8000 --env GREETED Course demos/images:latest` und `docker ps` im anderen Panel, um die Ausführung ohne `docker-compose.yaml` zu zeigen
+> [!NOTE]
+> Führe die folgenden Befehle aus dem Verzeichnis `demos/03-build-docker-image` aus. Dort liegen
+> `app.py`, `Dockerfile` und `docker-compose.yaml`.
+
+### 1. Anwendung und Image untersuchen
+
+1. Zeige `app.py`. Die Anwendung startet einen kleinen HTTP-Server und verwendet die
+    Umgebungsvariable `GREETED` für die Antwort.
+2. Zeige das `Dockerfile` und erläutere die Schritte zum Erstellen des Images:
+    Basis-Image auswählen, Anwendung kopieren, nicht-root Benutzer verwenden und den Port festlegen.
+
+### 2. Image bauen
+
+```bash
+docker build -t demos/images:latest .
+```
+
+Zeige das neu erstellte Image:
+
+```bash
+docker images
+```
+
+### 3. Container mit Docker Compose starten
+
+```bash
+docker compose up -d
+docker ps
+```
+
+Die Compose-Datei veröffentlicht den Container-Port `8000` auf dem Host-Port `9999`.
+Ein Zugriff auf den unveröffentlichten Container-Port über den Host-Port `8000` schlägt daher fehl:
+
+```bash
+curl http://127.0.0.1:8000
+```
+
+Der veröffentlichte Port liefert dagegen die erwartete Antwort:
+
+```bash
+curl http://127.0.0.1:9999
+```
+
+Zeige bei Bedarf die von Docker eingerichtete Weiterleitung:
+
+```bash
+sudo netstat -tulpn | grep -i docker
+```
+
+### 4. Container stoppen und erneut starten
+
+Beobachte den Dienst in einem zweiten Terminal-Panel:
+
+```bash
+watch -n 0.5 curl http://127.0.0.1:9999
+```
+
+Stoppe und starte den Compose-Dienst im ersten Panel:
+
+```bash
+docker compose stop
+docker compose start
+```
+
+Container lassen sich dadurch sehr schnell stoppen und wieder starten.
+
+### 5. Umgebungsvariable verändern
+
+Verändere `docker-compose.yaml`, sodass `GREETED` nicht mehr gesetzt wird, und starte den Dienst
+erneut:
+
+```bash
+docker compose up -d
+curl http://127.0.0.1:9999
+```
+
+Die Antwort lautet nun `Hello Students!`. In `app.py` gibt es keinen Standardwert für `GREETED`.
+Der Wert kommt deshalb aus dem `Dockerfile`, in dem `ENV GREETED=Students` gesetzt ist.
+
+### 6. Container ohne Compose ausführen
+
+Stoppe und entferne zuerst den Compose-Container:
+
+```bash
+docker compose down
+```
+
+Starte das Image anschließend direkt mit `docker run` und setze die Umgebungsvariable explizit:
+
+```bash
+docker run --rm --publish 9999:8000 --env GREETED=Course demos/images:latest
+```
+
+Zeige in einem zweiten Terminal-Panel den laufenden Container:
+
+```bash
+docker ps
+```
