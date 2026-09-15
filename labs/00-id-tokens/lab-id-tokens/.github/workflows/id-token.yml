@@ -8,6 +8,16 @@ on:
         description: "GCP Projekt Nummer, des Workload Identity Providers"
         required: true
         type: string
+      wif_pool_name:
+        description: "Name des Workload Identity Pools"
+        required: false
+        default: "github"
+        type: string
+      wif_provider:
+        description: "Name des Workload Identity Providers"
+        required: false
+        default: "repo-id-tokens"
+        type: string
 
 jobs:
   main:
@@ -17,9 +27,8 @@ jobs:
       id-token: write
     env:
       PROJECT_NUMBER: "${{ inputs.project_number }}"
-      # Configuration for some values, that need to be set in demos/00-gcp-wif
-      WIF_POOL_NAME: "github"
-      WIF_PROVIDER: "lab-id-tokens"
+      WIF_POOL_NAME: "${{ inputs.wif_pool_name }}"
+      WIF_PROVIDER: "${{ inputs.wif_provider }}"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -53,18 +62,25 @@ jobs:
         run: |
           # Get bucket names as a JSON array of strings
           buckets="$(gcloud storage buckets list --format json | jq -c '[.[].name]')"
-          echo "::notice title=GCP_Buckets::${buckets}"
+          if [ "$(echo "$buckets" | jq 'length')" -eq 0 ]; then
+            echo "::notice title=GCP_Buckets::No buckets could be retrieved. Please check the 'List all Buckets' step for further details, e.g. permission issues."
+          else
+            echo "::notice title=GCP_Buckets::${buckets}"
+          fi
           echo "all=${buckets}" >> "$GITHUB_OUTPUT"
 
-      - name: List sample files of Demo Bucket
+      - name: List files of first bucket
         env:
-          PROJECT_ID: "${{ steps.project.outputs.id }}"
           BUCKETS: "${{ steps.buckets.outputs.all }}"
         run: |
-          bucket=$(echo "$BUCKETS" | jq -r --arg pid "$PROJECT_ID" '.[] | select(startswith($pid))' | head -n 1)
-          if [ -z "$bucket" ]; then
-            echo "❌ No bucket found for project ${PROJECT_ID}. Is the Demo environment set up?"
+          bucket=$(echo "$BUCKETS" | jq -r '.[0]')
+          if [ -z "$bucket" ] || [ "$bucket" == "null" ]; then
+            echo "No bucket found in the configured project."
             exit 1
           fi
           files="$(gcloud storage objects list "gs://$bucket" --format json | jq -c '[.[].name]')"
-          echo "::notice title=Files_in_${bucket}::${files}"
+          if [ "$(echo "$files" | jq 'length')" -eq 0 ]; then
+            echo "::notice title=Files_in_${bucket}::No files could be retrieved from Bucket ${bucket}. Please check the 'List files of first bucket' step for further details, e.g. permission issues."
+          else
+            echo "::notice title=Files_in_${bucket}::${files}"
+          fi

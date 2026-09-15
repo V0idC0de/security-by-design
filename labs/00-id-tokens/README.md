@@ -1,7 +1,7 @@
 # 00 ID Tokens
 
 - [00 ID Tokens](#00-id-tokens)
-  - [Durchführung](#durchführung)
+  - [Teil 1 - Zugriff von GitHub auf Google Cloud](#teil-1---zugriff-von-github-auf-google-cloud)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
     - [2. GitHub Login](#2-github-login)
     - [3. Repository erstellen](#3-repository-erstellen)
@@ -11,7 +11,14 @@
     - [7. Ergebnisse betrachten](#7-ergebnisse-betrachten)
     - [8. ID-Token decodieren](#8-id-token-decodieren)
     - [9. ID-Token untersuchen](#9-id-token-untersuchen)
-    - [10. Aufräumen](#10-aufräumen)
+  - [Teil 2: Workload Identity Federation für das eigene Projekt](#teil-2-workload-identity-federation-für-das-eigene-projekt)
+    - [10. WIF-Pool erstellen](#10-wif-pool-erstellen)
+    - [12. Bucket erstellen](#12-bucket-erstellen)
+    - [13. Workflow für das eigene Projekt konfigurieren und ausführen](#13-workflow-für-das-eigene-projekt-konfigurieren-und-ausführen)
+      - [13.1 Zugriff für GitHub Workflow vergeben](#131-zugriff-für-github-workflow-vergeben)
+      - [13.2 Werte im Workflow prüfen](#132-werte-im-workflow-prüfen)
+      - [13.3 Workflow erneut ausführen](#133-workflow-erneut-ausführen)
+    - [14. Aufräumen](#14-aufräumen)
     - [Abschluss](#abschluss)
   - [Lokale Umgebung bauen](#lokale-umgebung-bauen)
     - [1. Klone das Repository](#1-klone-das-repository)
@@ -35,7 +42,7 @@ Bei lokaler Ausführung des Labs außerhalb einer bereitgestellten Testumgebung 
 > ist es möglich, dass du dies selbst aufsetzen musst und dafür einen Google Cloud Account benötigst.
 > Die Nutzung von Google Cloud kann Kosten verursachen.
 
-## Durchführung
+## Teil 1 - Zugriff von GitHub auf Google Cloud
 
 Die folgenden Schritte gehen davon aus, dass du dich in der Laborumgebung befindest (bereitgestellte Umgebung oder lokal ausgeführter Container).
 
@@ -105,14 +112,15 @@ Warte bis der Workflow abgeschlossen ist, und aktualisiere dann die Seite erneut
 - Eine Liste aller Buckets im Google Cloud Projekt
 - Eine Liste aller Dateien in einem der Buckets
 
-> [!CRITICAL]
+> [!CAUTION]
 > Das ID-Token wird in den Annotationen mit Base-64 codiert angezeigt.
 > Da das ID-Token ein temporäres Secret ist, ist das natürlich **unsicher** und sollte
 > nicht außerhalb einer geschützten Testumgebung getan werden!
 > Dieses Lab-Repository wurde als privates Repository erstellt, sodass die Workflows
 > und ihre Logs nur von dir einsehbar sind.
 > Jeder, der das ID-Token hat, kann sich als dieser Workflow ausgeben.
-> Das `aud`-Feld sollte die Nutzung stark einschränken, aber das Token ist dennoch gültig.
+> Für dieses angezeigte Token ist das `aud`-Feld auf einen speziellen Wert gesetzt,
+> was die Nutzung stark einschränken sollte - das Token ist kryptographisch aber dennoch gültig.
 
 ### 8. ID-Token decodieren
 
@@ -123,9 +131,9 @@ um es am GitHub-Filter "vorbeizuschmuggeln".
 Dies ermöglicht uns, das Token zu kopieren, demonstriert allerdings auch, dass man sich auf
 derartige Blacklist-Filter nicht verlassen sollte.
 
-1. Klicke in der Annotation **Get ID Token for this Workflow** auf `Show more`, um den gesamten
-Token-Text anzuzeigen und kopiere ihn
-2. Öffnet das [vorkonfigurierte CyberChef](https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)) und füge das Token als Input ein
+1. Klicke in der Annotation **Workflow_ID_Token** auf `Show more`, um den gesamten
+   Token-Text anzuzeigen und kopiere ihn
+2. Öffnet das [vorkonfigurierte CyberChef](<https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)>) und füge das Token als Input ein - sollte die "Recipe"-Liste leer bleiben, ziehe "From Base64" manuell von links in die Rezeptliste.
 3. Kopiere das tatsächliche ID-Token im JWT-Format aus dem Output für den nächsten Schritt
 
 > [!NOTE]
@@ -140,7 +148,103 @@ Füge das ID-Token und füge es auf [jwt.io](https://jwt.io/) ein, um die enthal
 
 Überlege, welche Attribute genutzt werden könnten, um ein Repository, einen Workflow-Run oder andere Details eindeutig zu identifizieren.
 
-### 10. Aufräumen
+---
+
+## Teil 2: Workload Identity Federation für das eigene Projekt
+
+In Teil 1 hast du den Workflow mit dem bereits vorbereiteten **Projekt** der Demo-Umgebung
+ausgeführt. Jetzt richtest du Workload Identity Federation (WIF) für dein eigenes Google-Cloud-
+Projekt ein. Dadurch kann genau dein Repository den Workflow für dein Projekt verwenden, ohne
+einen statischen Schlüssel als Secret zu speichern.
+
+Dazu wird nun Workload Identity Federation konfiguriert, um GitHub's ID-Tokens zu vertrauen.
+Anschließend wird dieser externen Identität von GitHub eine Berechtigung vergeben.
+
+### 10. WIF-Pool erstellen
+
+1. Öffne in Google Cloud die **Workload Identity Federation**-Einstellungen deines eigenen
+   Projekts. Du findest sie in der linken Menüspalte unter **IAM & Admin**.
+2. Erstelle einen neuen Pool, indem du auf **Get Started** klickst.
+3. Wähle einen beliebigen kurzen Namen und ID (die ID ist für folgende Schritte wichtig), dann klicke **Continue**.
+   ![WIF Pool erstellen](assets/wif-pool.png)
+4. Als Provider-Typ wähle **OpenID Connect (OIDC)** und wähle ebenfalls einen **Provider name** - merke dir diesen als **Provider ID**.
+5. Als **Issuer (URL)** trage ein: `https://token.actions.githubusercontent.com`
+6. Belasse den Rest auf den Standardwerten und klicke **Continue** - die Übersicht sollte nun etwa so aussehen:
+   ![WIF Provider erstellen](assets/wif-pool-provider.png)
+7. Hinterlege folgende Attribute-Zuordnungen (bei **Provider Attributes** bzw. **Attribute Mapping**):
+   - `google.subject` = `assertion.sub`
+   - `attribute.repository` = `assertion.repository`
+   - `attribute.owner` = `assertion.repository.split("/")[0]`
+
+8. Füge eine **Attribute Condition** via Klick auf **Add condition** hinzu, um den Provider auf deine Repositories zu beschränken. So wird ein Login aus anderen GitHub Repositories verhindert. Dazu nutzt du deinen GitHub Username als Vergleichwert für den `owner` im ID-Token.
+   - `attribute.owner == "<dein GitHub Username>"`
+     > [!CAUTION]
+     > Dieser Vergleich ist case-sensitiv! Schreibe deinen Account exakt wie er auf GitHub vorliegt bzw. du ihn im ID-Token vorgefunden hast.
+
+   ![WIF Provider Condition](assets/wif-pool-condition.png)
+
+Schließe anschließend die Erstellung des Providers mit Klick auf **Save** ab.
+
+> [!IMPORTANT]
+> Notiere dir die **Pool ID**, die **Provider ID** und deine **Projekt-Nummer**. Letzteres findest zu z.B. indem du deinen WIF Pool anklickst und den Wert des **IAM Principal** überprüfst (siehe untenstehendes Bild). Hier findest du den Text `.../projects/01234567890/...`. Diese Nummer ist deine Projekt-Nummer.
+> Diese 3 Werte sind für spätere Schritte entscheidend.
+
+![Projekt-Nummer finden](assets/wif-project-number.png)
+
+### 12. Bucket erstellen
+
+1. Öffne im selben Google-Cloud-Projekt über das linke Seiten-Menü **Cloud Storage** --> **Buckets**
+2. Erstelle einen Bucket mit einem beliebigen, noch verfügbaren Namen. Klicke nach Eintragung des Namens direkt auf **Create**.
+   1. Dieser Bucket dient im zweiten Workflow-Lauf als Ressource, auf die zugegriffen wird.
+
+### 13. Workflow für das eigene Projekt konfigurieren und ausführen
+
+#### 13.1 Zugriff für GitHub Workflow vergeben
+
+In diesem Abschnitt gewähren wir Berechtigungen für den GitHub Workflow, sodass er nach dem Login auch Aktionen in Google Cloud durchführen kann.
+Speziell möchten wir, dass der Workflow die Storage Buckets und deren Dateien/Objekte auflisten kann.
+
+1. Öffne über das linke Seiten-Menü die Seite **IAM and Admin --> IAM** deines Google-Cloud-Projekts über die linke Menüspalte.
+2. Füge einen neuen Zugriff via **Grant Access** hinzu.
+3. Als Identität, die diese Zugriffsrechte erhält, benennen wir einen besonderen String (siehe nächster Schritt), alle externen Identitäten bezeichnet, die
+   1. den mit `POOL_ID` und `PROJECT_NUMBER` bezeichneten **Workload Identity Federation Pool** nutzen
+   2. die Bedingung am Ende des Strings erfüllen - hier `attribute.repository` muss `REPOSITORY_NAME` entsprechen.
+4. Der besondere String lautet `principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/attribute.repository/REPOSITORY_NAME`. Ersetze diese Werte wie folgt:
+   1. Ersetze `PROJECT_NUMBER` und `POOL_ID` mit [den notierten Werten bei der Erstellung des WIF Pools](#10-wif-pool-erstellen)
+   2. Ersetze `REPOSITORY_NAME` durch den vollständigen Namen deines Repositories, z.B. `git-user/lab-id-tokens`
+      > [!CAUTION]
+      > Auch dieser Wert (`REPOSITORY_NAME`) ist case-sensitiv - beachte die Groß- und Kleinschreibung deines GitHub Username und des Repository.
+5. Wähle als Rollen **Storage Object Viewer** (`roles/storage.objectViewer`) UND **Storage Bucket Viewer** (`roles/storage.bucketViewer`), dann speichere den Zugriff mit **Save**.
+   1. Falls dir die Änderung der Berechtigungen verweigert wird, prüfe den Namen der Rolle. **Storage Viewer** existiert auch, ist aber eine andere Rolle!
+
+#### 13.2 Werte im Workflow prüfen
+
+1. Kehre zu deinem GitHub Repository zurück und öffne die Datei `.github/workflows/id-token.yml`
+2. Untersuche den Schritt **Authenticate to Google Cloud with ID Token**.
+
+Dort werden die drei Werte zu der Resource-Adresse des WIF-Providers zusammengesetzt:
+
+```yaml
+uses: google-github-actions/auth@v3
+with:
+  workload_identity_provider: "projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.WIF_POOL_NAME }}/providers/${{ env.WIF_PROVIDER }}"
+```
+
+Der Schritt verwendet die vorgefertigte GitHub Action `google-github-actions/auth`, um sich ohne statische
+Zugangsdaten bei Google Cloud anzumelden. Dazu wird gezielt ein WIF Provider genutzt.
+
+#### 13.3 Workflow erneut ausführen
+
+1. Öffne den Tab **Actions** und wähle **ID Token Exchange with GCP**.
+2. Klicke auf **Run workflow**.
+3. Gib deine [zuvor notierte](#10-wif-pool-erstellen) numerische **Project Number**, die **ID deines WIF-Pools** und die **ID deines WIF-Providers** ein. Diese beiden Eingaben überschreiben die voreingestellten Werte `github` und `repo-id-tokens`.
+4. Starte den Workflow und prüfe nach Abschluss die Annotation **List all Buckets** - eventuell musst du die Seite nach Abschluss aktualisieren, um neue Annotations zu sehen.
+
+Die Ausgabe sollte den Bucket aus deinem eigenen Projekt enthalten. Die Annotation
+**List files of first bucket** kann für einen neu erstellten, leeren Bucket anzeigen, dass keine Dateien gefunden wurden.
+Falls der Name des Buckets korrekt abgerufen wurde, ist das Lab erfolgreich.
+
+### 14. Aufräumen
 
 Kehre in die Lab-Umgebung zur CLI zurück und lösche das Repository:
 
@@ -156,6 +260,9 @@ In diesem Lab hast du gesehen, wie ein ID-Token für die Authentifizierung genut
 und mit einem GitHub Workflow verarbeitet werden kann.
 Außerdem hast du gelernt, wie man die Claims eines ID-Tokens analysiert und
 daraus Informationen für die Identifikation von Identitäten bekommt.
+
+Abschließend hast du Workload Identity Federation selbst konfiguriert und deinem Repository
+Zugriff zu deinem Google Cloud Projekt gegeben - alles ganz ohne statische Passwörter oder Schlüssel.
 
 ## Lokale Umgebung bauen
 
