@@ -1,0 +1,7 @@
+services:
+  my-app:
+    image: demos/images:latest
+    environment:
+      GREETED: World
+    ports:
+      - "9999:8000"
