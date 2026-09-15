@@ -11,6 +11,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY lab-webserver $WEBSERVER_PATH
+COPY --chmod=755 start-webserver.sh /usr/local/bin/start-lab-webserver
 
 # Erstelle einen nicht-root Benutzer
 ARG USERNAME=labuser
@@ -25,8 +26,8 @@ USER $USERNAME
 ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 
 # Installiere TruffleHog
-RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh \
-    | sh -s -- -b /home/$USERNAME/.local/bin $TRUFFLEHOG_VERSION
+RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/refs/tags/${TRUFFLEHOG_VERSION}/scripts/install.sh \
+    | sh -s -- -b /home/${USERNAME}/.local/bin ${TRUFFLEHOG_VERSION}
 
 # Installiere githacker und Bandit
 RUN pip install GitHacker==$GITHACKER_VERSION bandit==$BANDIT_VERSION
@@ -51,6 +52,8 @@ ENV WEBSERVER_PATH=$WEBSERVER_PATH
 RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tree/main/labs/01-git-hacking" > /home/$USERNAME/GUIDE.md
 # Setze Alias zum schnellen Anzeigen des Doku-Links
 RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
+# Starte den Webserver, sobald eine interaktive Shell geöffnet wird
+RUN echo "/usr/local/bin/start-lab-webserver & disown" >> /home/$USERNAME/.bashrc
 
-# Starte Webserver + Shell
-ENTRYPOINT ["/bin/bash", "-c", "python ${WEBSERVER_PATH}/server.py 2>&1 > ${WEBSERVER_PATH}/server.log & exec bash"]
+# Starte die interaktive Lab-Shell
+ENTRYPOINT ["/bin/bash"]
