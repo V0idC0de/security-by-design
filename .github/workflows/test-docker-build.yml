@@ -14,7 +14,7 @@ jobs:
     outputs:
       matrix: ${{ steps.changed-labs.outputs.matrix || steps.all-dockerfiles.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -64,7 +64,7 @@ jobs:
     env:
       IMAGE_NAME: test-image
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Build Docker Image
         id: build-docker-image

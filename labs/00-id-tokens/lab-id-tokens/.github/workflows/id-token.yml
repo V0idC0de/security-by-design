@@ -22,7 +22,7 @@ jobs:
       WIF_PROVIDER: "lab-id-tokens"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Get ID Token for this Workflow
         env:

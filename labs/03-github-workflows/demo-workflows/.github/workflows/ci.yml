@@ -12,7 +12,7 @@ jobs:
     name: TruffleHog Secret Scan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           # Fetch all history for accurate scanning
@@ -28,7 +28,7 @@ jobs:
     name: Format Check (Python & YAML)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v5.6.0
         with:
