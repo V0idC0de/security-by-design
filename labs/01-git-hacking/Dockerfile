@@ -11,7 +11,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY lab-webserver $WEBSERVER_PATH
-COPY --chmod=755 start-webserver.sh /usr/local/bin/start-lab-webserver
+COPY start-webserver.sh /usr/local/bin/start-lab-webserver
+RUN chmod 755 /usr/local/bin/start-lab-webserver
 
 # Erstelle einen nicht-root Benutzer
 ARG USERNAME=labuser
