@@ -40,11 +40,10 @@ variable "parent_folder" {
 variable "machine" {
   description = "The machine settings for the compute instance."
   type = object({
-    type             = optional(string, "e2-standard-2")
-    disk_auto_delete = optional(bool, true)
-    disk_size_gb     = optional(number, 250)
-    disk_type        = optional(string, "pd-balanced")
-    username         = optional(string, "janitor")
+    type         = optional(string, "e2-standard-2")
+    disk_size_gb = optional(number, 250)
+    disk_type    = optional(string, "pd-balanced")
+    username     = optional(string, "janitor")
   })
   nullable = false
   default  = {}

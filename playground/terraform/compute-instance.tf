@@ -30,10 +30,11 @@ resource "google_compute_instance" "container-host" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu.self_link
-      size  = var.machine.disk_size_gb
-      type  = var.machine.disk_type
     }
-    auto_delete = var.machine.disk_auto_delete
+  }
+
+  attached_disk {
+    source = google_compute_disk.container-host-data.id
   }
 
   ## Local SSD disk
@@ -65,4 +66,14 @@ resource "google_compute_instance" "container-host" {
   lifecycle {
     ignore_changes = [boot_disk[0].initialize_params[0].image]
   }
+}
+
+resource "google_compute_disk" "container-host-data" {
+  name    = "container-host-data"
+  project = local.project.project_id
+  type    = var.machine.disk_type
+  zone    = "${var.region}-a"
+  size    = var.machine.disk_size_gb
+
+  depends_on = [google_project_service.enabled]
 }
