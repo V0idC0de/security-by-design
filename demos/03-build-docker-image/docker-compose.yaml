@@ -1,6 +1,6 @@
 services:
   my-app:
-    image: demos/images:latest
+    image: demos/docker-building:v1.0.0
     environment:
       GREETED: World
     ports:

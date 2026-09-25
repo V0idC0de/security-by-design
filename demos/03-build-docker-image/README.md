@@ -25,7 +25,7 @@ ausgeführt wird. Dabei werden außerdem Port-Weiterleitungen und Umgebungsvaria
 ### 2. Image bauen
 
 ```bash
-docker build -t demos/images:latest .
+docker build -t demos/docker-building:latest -t demos/docker-building:v1.0.0 .
 ```
 
 Zeige das neu erstellte Image:
@@ -101,7 +101,7 @@ docker compose down
 Starte das Image anschließend direkt mit `docker run` und setze die Umgebungsvariable explizit:
 
 ```bash
-docker run --rm --publish 9999:8000 --env GREETED=Course demos/images:latest
+docker run --rm --publish 9999:8000 --env GREETED=Course demos/docker-building:latest
 ```
 
 Zeige in einem zweiten Terminal-Panel den laufenden Container:
