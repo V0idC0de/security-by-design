@@ -62,27 +62,24 @@ variable "machine_state" {
   }
 }
 
-variable "dns_name" {
-  description = "Subdomain of duckdns.org to use for the VM's FQDN. If unset, no record at DuckDNS will be created/refreshed. This name must be registered at DuckDNS beforehand!"
-  type        = string
-  nullable    = true
-  default     = null
-
-  validation {
-    condition     = var.dns_name == null || can(regex("^[a-zA-Z0-9-]{3,64}$", var.dns_name))
-    error_message = "The dns_name must be a valid subdomain (e.g. 'example') without any dots."
-  }
+variable "dns" {
+  description = "The DNS settings for the VM's IP (on NetCup only currently). If null, no DNS is configured."
+  type = object({
+    zone     = string
+    hostname = string
+  })
+  nullable = true
 }
 
-variable "duckdns_token" {
-  description = "The token for the DuckDNS API. Required if dns_name is set."
-  type        = string
-  nullable    = true
-  default     = null
-  sensitive   = true
-
-  validation {
-    condition     = var.duckdns_token == null || can(regex("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$", var.duckdns_token))
-    error_message = "Token for DuckDNS doesn't seem to be a valid UUID format, but that would be expected."
-  }
+variable "netcup" {
+  description = "The NetCup account settings for managing DNS. If empty, environment variables are used."
+  type = object({
+    # See https://registry.terraform.io/providers/rixlhq/netcup/latest/docs
+    api_key         = string
+    api_password    = string
+    customer_number = string
+  })
+  nullable  = true
+  default   = null
+  sensitive = true
 }

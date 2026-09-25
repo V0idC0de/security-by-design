@@ -21,6 +21,10 @@ terraform {
       source  = "hashicorp/http"
       version = "3.5.0"
     }
+    netcup = {
+      source  = "rixlhq/netcup"
+      version = "~> 1.2.1"
+    }
   }
 }
 
@@ -28,4 +32,14 @@ provider "tls" {}
 
 provider "google" {
   region = var.region
+}
+
+# Configure the following environment variables or Terraform variables, if DNS should be configured.
+# - NETCUP_API_KEY
+# - NETCUP_API_PASSWORD
+# - NETCUP_CUSTOMER_NUMBER
+provider "netcup" {
+  api_key         = try(var.netcup.api_key, null)
+  api_password    = try(var.netcup.api_password, null)
+  customer_number = try(var.netcup.customer_number, null)
 }

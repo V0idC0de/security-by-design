@@ -1,8 +1,12 @@
 locals {
   public_ip = google_compute_instance.container-host.network_interface[0].access_config[0].nat_ip
   outputs = {
-    public_ip      = local.public_ip
-    fqdn           = length(data.http.duckdns-update) > 0 ? "${var.dns_name}.duckdns.org" : try(local.public_ip, null)
+    public_ip = local.public_ip
+    fqdn = (
+      one(netcup_dns_record.a) != null
+      ? "${netcup_dns_record.a[0].hostname}.${netcup_dns_record.a[0].zone}"
+      : try(local.public_ip, null)
+    )
     initial_user   = var.machine.username
     inventory_path = abspath("${path.module}/../ansible/inventory")
     ssh            = { for k, v in local.ssh : k => abspath(v) }

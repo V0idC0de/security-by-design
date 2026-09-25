@@ -1,3 +1,6 @@
+# Explicitly ignore .envrc as sensitive data might be contained
+**/.envrc
+
 # Ignore filled-out version of default variable files
 default.auto.tfvars.json
 

@@ -1,7 +1,8 @@
-# Not exactly clean, since this will run on every `play` already.
-# However, this is a clean way to keep the DNS settings in Terraform.
-data "http" "duckdns-update" {
-  count  = var.dns_name != null && var.duckdns_token != null ? 1 : 0
-  url    = "https://www.duckdns.org/update?domains=${var.dns_name}&token=${var.duckdns_token}&ip=${local.public_ip}"
-  method = "GET"
+resource "netcup_dns_record" "a" {
+  count       = var.dns != null ? 1 : 0
+  zone        = var.dns.zone
+  hostname    = var.dns.hostname
+  type        = "A"
+  destination = local.public_ip
+  priority    = 0
 }

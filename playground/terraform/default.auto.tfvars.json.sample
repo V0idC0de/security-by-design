@@ -2,6 +2,8 @@
   "project_reuse": false,
   "project_id": "cool-project-id",
   "machine_state": "RUNNING",
-  "dns_name": "my-subdomain",
-  "duckdns_token": "token-uuid-here"
+  "dns": {
+    "zone": "example.org",
+    "hostname": "sbd"
+  }
 }
