@@ -1,24 +1,24 @@
 # X0 Google Cloud
 
 - [X0 Google Cloud](#x0-google-cloud)
-    - [Durchführung](#durchführung)
-      - [1. Google Cloud Console öffnen](#1-google-cloud-console-öffnen)
-      - [2. Bucket erstellen](#2-bucket-erstellen)
-      - [3. Ordner erstellen und Datei hochladen](#3-ordner-erstellen-und-datei-hochladen)
-      - [4. Berechtigungen des Buckets prüfen](#4-berechtigungen-des-buckets-prüfen)
-      - [5. Service Account erstellen](#5-service-account-erstellen)
-      - [6. Berechtigungen für den Service Account vergeben](#6-berechtigungen-für-den-service-account-vergeben)
-      - [7. Impersonation-Berechtigung vergeben](#7-impersonation-berechtigung-vergeben)
-      - [8. Cloud Shell aktivieren](#8-cloud-shell-aktivieren)
-      - [9. Objekt mit dem Service Account herunterladen](#9-objekt-mit-dem-service-account-herunterladen)
-        - [9.a Impersonation für die Sitzung aktivieren](#9a-impersonation-für-die-sitzung-aktivieren)
-        - [9.b Identität des Service Accounts bestätigen](#9b-identität-des-service-accounts-bestätigen)
-        - [9.c Objekt als Service Account herunterladen](#9c-objekt-als-service-account-herunterladen)
-        - [9.d Berechtigungsgrenzen testen](#9d-berechtigungsgrenzen-testen)
-        - [9.e Impersonation deaktivieren](#9e-impersonation-deaktivieren)
-        - [9.f Vergleich: als du selbst löschen](#9f-vergleich-als-du-selbst-löschen)
-      - [10. Aufräumen](#10-aufräumen)
-      - [Abschluss](#abschluss)
+  - [Durchführung](#durchführung)
+    - [1. Google Cloud Console öffnen](#1-google-cloud-console-öffnen)
+    - [2. Bucket erstellen](#2-bucket-erstellen)
+    - [3. Ordner erstellen und Datei hochladen](#3-ordner-erstellen-und-datei-hochladen)
+    - [4. Berechtigungen des Buckets prüfen](#4-berechtigungen-des-buckets-prüfen)
+    - [5. Service Account erstellen](#5-service-account-erstellen)
+    - [6. Berechtigungen für den Service Account vergeben](#6-berechtigungen-für-den-service-account-vergeben)
+    - [7. Impersonation-Berechtigung vergeben](#7-impersonation-berechtigung-vergeben)
+    - [8. Cloud Shell aktivieren](#8-cloud-shell-aktivieren)
+    - [9. Objekt mit dem Service Account herunterladen](#9-objekt-mit-dem-service-account-herunterladen)
+      - [9.a Impersonation für die Sitzung aktivieren](#9a-impersonation-für-die-sitzung-aktivieren)
+      - [9.b Identität des Service Accounts bestätigen](#9b-identität-des-service-accounts-bestätigen)
+      - [9.c Objekt als Service Account herunterladen](#9c-objekt-als-service-account-herunterladen)
+      - [9.d Berechtigungsgrenzen testen](#9d-berechtigungsgrenzen-testen)
+      - [9.e Impersonation deaktivieren](#9e-impersonation-deaktivieren)
+      - [9.f Vergleich: als du selbst löschen](#9f-vergleich-als-du-selbst-löschen)
+    - [10. Aufräumen](#10-aufräumen)
+    - [Abschluss](#abschluss)
 
 In diesem Lab machst du deine ersten Schritte in der **Google Cloud Console**. Anhand eines
 kleinen Szenarios - eine Datei in einem Cloud Storage Bucket, auf die ein **Service Account**
@@ -58,10 +58,10 @@ Navigiere über das Menü links (Hamburger-Icon) zu **Cloud Storage → Buckets*
 **Erstellen** (Create).
 
 1. Vergib einen eindeutigen Namen (Bucket-Namen sind **global** eindeutig - ergänze z.B. deine
-      Initialen oder eine Zufallszahl, z.B. `sbd-lab-<eindeutiger name>`).
+   Initialen oder eine Zufallszahl, z.B. `sbd-lab-<eindeutiger name>`).
 2. Übernimm bei Standort, Speicherklasse und Zugriffssteuerung die vorgeschlagenen Standardwerte
-      (**Einheitliche Zugriffssteuerung / Uniform bucket-level access** sollte aktiv sein - dazu
-      mehr in Schritt 4).
+   (**Einheitliche Zugriffssteuerung / Uniform bucket-level access** sollte aktiv sein - dazu
+   mehr in Schritt 4).
 3. Klicke auf **Erstellen**.
 
 > [!NOTE]
@@ -259,12 +259,12 @@ In diesem Lab hast du dich zum ersten Mal durch die Google Cloud Console bewegt 
 Folgendes gelernt:
 
 - Navigation durch die Google Cloud Console: Projekte, Cloud Storage Buckets, Service Accounts
-    und Cloud Shell.
+  und Cloud Shell.
 - Berechtigungen in der Cloud gelten **pro Identität** - ein neuer Service Account hat
-    standardmäßig nichts, und selbst kleine Aufgaben (ein Objekt lesen) erfordern eine gezielte,
-    geprüfte Rechtevergabe.
+  standardmäßig nichts, und selbst kleine Aufgaben (ein Objekt lesen) erfordern eine gezielte,
+  geprüfte Rechtevergabe.
 - Für den Zugriff braucht es **keinen** heruntergeladenen Schlüssel: Mit **Impersonation** und
-    einem expliziten Caller-Identity-Check hast du nachvollzogen, als welche Identität `gcloud`
-    gerade tatsächlich handelt.
+  einem expliziten Caller-Identity-Check hast du nachvollzogen, als welche Identität `gcloud`
+  gerade tatsächlich handelt.
 - Dieses Prinzip - Zugriff ohne dauerhafte, statische Zugangsdaten - vertiefen die folgenden
-    Labs weiter, u.a. mit kurzlebigen ID-Tokens und Workload Identity Federation.
+  Labs weiter, u.a. mit kurzlebigen ID-Tokens und Workload Identity Federation.
