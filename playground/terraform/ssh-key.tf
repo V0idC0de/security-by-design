@@ -25,10 +25,11 @@ resource "local_file" "ssh_public_key" {
 resource "local_file" "ssh_config" {
   content         = <<-EOT
 Host lab-host
-    HostName ${local.outputs.fqdn}
+    HostName ${local.outputs.public_ip}
     User ${local.outputs.initial_user}
     IdentityFile ${local.ssh.priv_path}
     IdentitiesOnly yes
+    StrictHostKeyChecking no
 EOT
   filename        = local.ssh.config_path
   file_permission = "0600"
