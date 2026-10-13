@@ -45,14 +45,13 @@ den bereitgestellten Zugangsdaten an.
 
 Prüfe oben links über den Projekt-Umschalter (Project Picker), dass das von deinem Kursleiter
 genannte Projekt ausgewählt ist. Falls nicht, wähle es dort aus.
-Eventuell musst du über das Drop-down-Menü oben links im Pop-up eine **Organisation** auswählen, um das Projekt zu sehen.
 
-> [!NOTE]
-> Ein Google Cloud **Projekt** ist die grundlegende Einheit, in der Ressourcen (Buckets,
-> Service Accounts, VMs, ...) organisiert werden. Rechte werden typischerweise auf
-> Projektebene oder direkt auf einzelnen Ressourcen vergeben - genau das schauen wir uns
-> in diesem Lab genauer an.
->
+> [!TIP]
+> Eventuell musst du über das Drop-down-Menü oben links im Pop-up eine **Organisation** auswählen, um das Projekt im folgenden Schritt zu sehen.
+
+Ein Google Cloud **Projekt** ist die grundlegende Einheit, in der Ressourcen (Buckets, Service Accounts, VMs, ...) organisiert werden.
+Rechte werden typischerweise auf Projektebene oder direkt auf einzelnen Ressourcen vergeben - genau das schauen wir uns in diesem Lab genauer an.
+
 ### 2. Service Account erstellen
 
 Zunächst erstellen wir eine weitere Identität, um Unterschiede in den Berechtigungen besser darstellen zu können.
