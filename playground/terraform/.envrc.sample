@@ -1,0 +1,7 @@
+# Sample .envrc (software "direnv") to automatically configure NetCup Terraform Provider.
+# Since the Provider cannot be configured with `null` values, but should be optional
+# these cannot easily be set as variable and put into the provider.
+
+export NETCUP_API_KEY='long-api-key-here'
+export NETCUP_API_PASSWORD='long-api-password-here'
+export NETCUP_CUSTOMER_NUMBER='12345'
