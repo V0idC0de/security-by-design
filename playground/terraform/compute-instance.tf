@@ -66,3 +66,14 @@ resource "google_compute_instance" "container-host" {
     ignore_changes = [boot_disk[0].initialize_params[0].image]
   }
 }
+
+# Re-query this so the IP is known. The resource shows it as blank during plan,
+# making the plan inconsistent when referencing the IP, so running twice is required.
+data "google_compute_instance" "container-host" {
+  name    = google_compute_instance.container-host.name
+  zone    = google_compute_instance.container-host.zone
+  project = google_compute_instance.container-host.project
+  # Force that the resource finishes creating/modifying before this data source is read,
+  # so up-to-date information is used.
+  depends_on = [google_compute_instance.container-host]
+}
