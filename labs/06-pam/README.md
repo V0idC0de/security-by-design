@@ -67,7 +67,7 @@ PAM hat dir nun vorübergehend die Rolle `Project IAM Admin` gewährt:
 Zurück auf der IAM-Seite solltest du nun Folgendes sehen:
 
 - **`admin@sknx.de`** mit der Rolle **Tag Administrator**.
-- **Deinen eigenen Nutzer** mit der Rolle **Project IAM Admin** und dem Hinweis _Granted by: PAM_ in derselben Zeile. Dies ist die temporäre Bindung, die PAM erstellt hat.
+- **Deinen eigenen Nutzer** mit der Rolle **Project IAM Admin** und dem Hinweis _Created by: PAM_ in derselben Zeile. Dies ist die temporäre Bindung, die PAM erstellt hat.
 
 ## Schritt 7 - Ablauf des Zugriffs beobachten
 
