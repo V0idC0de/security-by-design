@@ -56,5 +56,7 @@ RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
 # Starte den Webserver, sobald eine interaktive Shell geöffnet wird
 RUN echo "/usr/local/bin/start-lab-webserver & disown" >> /home/$USERNAME/.bashrc
 
+RUN printf "\nHISTCONTROL=\nHISTIGNORE=\nshopt -s histappend\nset -o history\nPROMPT_COMMAND='history -a'\n" >> /home/$USERNAME/.bashrc
+
 # Starte die interaktive Lab-Shell
 ENTRYPOINT ["/bin/bash"]

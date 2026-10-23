@@ -58,4 +58,6 @@ WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 RUN echo "alias guide='batcat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
 
+RUN printf "\nHISTCONTROL=\nHISTIGNORE=\nshopt -s histappend\nset -o history\nPROMPT_COMMAND='history -a'\n" >> /home/$USERNAME/.bashrc
+
 ENTRYPOINT ["/bin/bash"]

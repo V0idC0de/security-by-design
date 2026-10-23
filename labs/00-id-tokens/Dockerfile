@@ -52,4 +52,6 @@ RUN echo "Dokumentation unter https://github.com/V0idC0de/security-by-design/tre
 # Setze Alias zum schnellen Anzeigen des Doku-Links
 RUN echo "alias guide='cat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
 
+RUN printf "\nHISTCONTROL=\nHISTIGNORE=\nshopt -s histappend\nset -o history\nPROMPT_COMMAND='history -a'\n" >> /home/$USERNAME/.bashrc
+
 ENTRYPOINT ["/bin/bash"]
