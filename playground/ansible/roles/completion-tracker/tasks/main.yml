@@ -1,0 +1,24 @@
+---
+- name: Ensure Python 3 is installed
+  ansible.builtin.apt:
+    name: python3
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure root completion-tracker directory exists
+  ansible.builtin.file:
+    path: /root/completion-tracker
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy completion tracker to the container host
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../completion-tracker/"
+    dest: /root/completion-tracker/
+    owner: root
+    group: root
+    mode: preserve
+    directory_mode: "0755"

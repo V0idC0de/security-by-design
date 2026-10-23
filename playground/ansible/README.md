@@ -29,6 +29,16 @@ ansible-playbook create-users.yml
 ansible-playbook build-images.yml
 ```
 
+#### Install Completion Tracker
+
+Install or update the monitor and its checks on the container host under `/root/completion-tracker`:
+
+```bash
+ansible-playbook install-completion-tracker.yml
+```
+
+This playbook installs Python 3.12 and copies the local [`completion-tracker`](../completion-tracker/) directory to the host. It does not build or restart lab containers.
+
 #### Create Lab Containers
 
 ```bash

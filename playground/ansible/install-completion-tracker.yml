@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
+- name: Install completion tracker on the container host
+  hosts: all
+  become: true
+  gather_facts: false
+
+  roles:
+    - completion-tracker
