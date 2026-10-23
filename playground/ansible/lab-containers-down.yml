@@ -8,12 +8,22 @@
   vars_files:
     - vars/settings.yaml
 
+  vars_prompt:
+    - name: delete_containers
+      prompt: "Delete the lab containers? Enter true to delete them or false to only stop them"
+      private: false
+      default: "false"
+
   vars:
-    # Override with "-e delete_containers=true" to destroy all lab containers.
-    delete_containers: false
     lab_users: "{{ lab_users | default([], true) }}"
 
   tasks:
+    - name: Validate container deletion choice
+      ansible.builtin.assert:
+        that:
+          - delete_containers | string | lower in ["true", "false"]
+        fail_msg: "delete_containers must be true or false."
+
     - name: Get all Docker container names (including stopped)
       ansible.builtin.shell: !unsafe "docker ps -a --format '{{.Names}}'"
       changed_when: false
