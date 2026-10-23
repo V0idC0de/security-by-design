@@ -4,6 +4,7 @@
   ansible.builtin.git:
     repo: "{{ github_repo }}"
     dest: "{{ repo_dest }}"
+    version: "{{ ref | default(omit) }}"
     update: yes
   register: repo_clone
 
