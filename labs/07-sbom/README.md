@@ -25,15 +25,14 @@ Führe die folgenden Befehle in der Lab-Shell der bereitgestellten Umgebung aus.
 ### 1. Betrachte das Setup
 
 ```bash
-tree -a -L 2
+tree -L 2
 cd lab-project
 ```
 
-Der Ordner `lab-project` enthält den Beispielcode und `requirements.txt`.
-In `.venv` liegt die vorbereitete **virtuelle Python-Umgebung** mit den installierten Dependencies.
-Das ist ein echtes Verzeichnis im Projekt, keine Verknüpfung. `tree -a -L 2` zeigt auch versteckte
-Ordner, begrenzt die Ausgabe aber auf zwei Ebenen. Die Umgebung ist bereits im `PATH` eingebunden;
-du musst sie nicht aktivieren.
+Der Ordner `lab-project` enthält etwas Beispielcode in `app.py` und `requirements.txt`,
+die Dependencies auflistet.
+Der Ordner `venv` enthält die vorbereitete **virtuelle Python-Umgebung** mit den installierten Dependencies aus `requirements.txt`.
+`tree -L 2` zeigt die Projektstruktur bis zur zweiten Ebene, sodass der tiefe `venv`-Ordner nicht vollständig gelistet wird.
 
 ### 2. Untersuche das Beispielprojekt
 
@@ -47,11 +46,11 @@ Das ist die **direkte Dependency**. Merke dir, dass hier ein Paket als Dependenc
 
 ### 3. Erzeuge eine SBOM
 
-**Syft** ist ein SBOM-Generator. Es untersucht hier `.venv`, weil dort alle Dependencies des Projekts
+**Syft** ist ein SBOM-Generator. Es untersucht hier `venv`, weil dort alle Dependencies des Projekts
 installiert sind, nicht nur die Einträge in `requirements.txt`.
 
 ```bash
-syft .venv -o cyclonedx-json=sbom.json
+syft venv -o cyclonedx-json=sbom.json
 ```
 
 `-o cyclonedx-json=sbom.json` schreibt die SBOM im **CycloneDX**-Format (ein JSON-Schema) nach `sbom.json`.

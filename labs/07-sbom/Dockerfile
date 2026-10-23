@@ -41,9 +41,10 @@ COPY constraints.txt /tmp/constraints.txt
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME /tmp/constraints.txt
 
 USER $USERNAME
-RUN python -m venv --without-pip /home/$USERNAME/lab-project/.venv && \
-    python -m pip --python /home/$USERNAME/lab-project/.venv install --no-cache-dir \
-        -r /home/$USERNAME/lab-project/requirements.txt -c /tmp/constraints.txt && \
+RUN python -m venv --without-pip /home/$USERNAME/lab-project/venv && \
+    python -m pip --python /home/$USERNAME/lab-project/venv install --no-cache-dir \
+        -r /home/$USERNAME/lab-project/requirements.txt \
+        -c /tmp/constraints.txt && \
     rm /tmp/constraints.txt
 
 USER root
@@ -52,7 +53,7 @@ COPY README.md /home/$USERNAME/GUIDE.md
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 USER $USERNAME
-ENV PATH="/home/$USERNAME/lab-project/.venv/bin:$PATH:/home/$USERNAME/.local/bin"
+ENV PATH="/home/$USERNAME/lab-project/venv/bin:$PATH:/home/$USERNAME/.local/bin"
 WORKDIR /home/$USERNAME
 ENV TERM=xterm-color
 RUN echo "alias guide='batcat /home/$USERNAME/GUIDE.md'" >> /home/$USERNAME/.bashrc
