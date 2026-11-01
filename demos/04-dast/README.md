@@ -11,7 +11,7 @@ DAST-Scan (Dynamic Application Security Testing) von einem zweiten Container aus
 
 ## Durchführung
 
-> [!WARNING]
+> [!CAUTION]
 > Führe automatisierte Scans nur gegen Anwendungen aus, für die du eine ausdrückliche Erlaubnis
 > hast. Der OWASP Juice Shop ist eine absichtlich verwundbare Anwendung und sollte ausschließlich in
 > einer dafür vorgesehenen Lernumgebung betrieben werden.
@@ -64,6 +64,16 @@ um daraus die verfügbaren API-Endpunkte auszulesen und gezielt zu scannen.
 Der HTML-Bericht `zap-report.html` wird im aktuellen Verzeichnis gespeichert
 und ist dank des gemounteten `./`-Verzeichnisses auch nachträglich auf dem Host verfügbar.
 
+Vorbereitung des Ordners für Konfiguration und Reports des Scans:
+
+```bash
+CONFIG_FILE="$(readlink -f FullScanGinNJuiceAuth.yaml)"
+cd "$(mktemp -d)"
+cp "$CONFIG_FILE" .
+```
+
+Ausführung des naiven ZAP-API-Scans:
+
 ```bash
 docker run --rm \
   --network host \
@@ -93,7 +103,6 @@ Nach Abschluss kann der Bericht `zap-report.html` im Browser geöffnet werden.
 <!-- markdownlint-enable MD028 -->
 
 ```bash
-curl -O https://raw.githubusercontent.com/zaproxy/community-scripts/f9cb362056f6c613ee60364e119ad4cab2fd0dd5/other/af-plans/FullScanGinNJuiceAuth.yaml
 docker run --rm \
   --network host \
   -v "$(pwd):/zap/wrk/:rw" \
