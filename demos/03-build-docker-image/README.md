@@ -65,7 +65,7 @@ sudo netstat -tulpn | grep -i docker
 Beobachte den Dienst in einem zweiten Terminal-Panel:
 
 ```bash
-watch -n 0.5 curl http://127.0.0.1:9999
+watch -n 0.5 curl -sS http://127.0.0.1:9999
 ```
 
 Stoppe und starte den Compose-Dienst im ersten Panel:
@@ -83,6 +83,7 @@ Verändere `docker-compose.yaml`, sodass `GREETED` nicht mehr gesetzt wird, und 
 erneut:
 
 ```bash
+# "GREETED" wird als Umgebungsvariable entfernt
 docker compose up -d
 curl http://127.0.0.1:9999
 ```
