@@ -195,8 +195,8 @@ terraform apply -var-file inputs/sample.3.tfvars.json
 terraform apply -var-file inputs/sample.3.tfvars.json
 ```
 
-Terraform liefert hier einen Plan ohne Änderungen liefert, da alles wie in der Konfiguration beschrieben existiert. > Dies zeigt die Idempotenz von Terraform - wiederholte Ausführungen führen zum gleichen Ergebnis,
-> statt Ressourcen doppelt zu erstellen, o.Ä.
+Terraform liefert hier einen Plan ohne Änderungen liefert, da alles wie in der Konfiguration beschrieben existiert. Dies zeigt die Idempotenz von Terraform - wiederholte Ausführungen führen zum gleichen Ergebnis,
+statt Ressourcen doppelt zu erstellen, o.Ä.
 
 ### 9. Infrastruktur abbauen
 
