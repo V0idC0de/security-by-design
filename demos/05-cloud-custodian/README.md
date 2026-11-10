@@ -1,5 +1,8 @@
 # 05 Cloud Custodian
 
+> [!NOTE]
+> This demo no longer works. Google Cloud Gen1 Functions are deprecated and do not launch properly anymore.
+
 - [05 Cloud Custodian](#05-cloud-custodian)
   - [Durchführung (Teil 1 - On-Demand)](#durchführung-teil-1---on-demand)
     - [1. Ordnerstruktur und Vorbereitung](#1-ordnerstruktur-und-vorbereitung)
@@ -89,8 +92,14 @@ Setze eine Hilfsvariable, um die `project_id` schneller verfügbar zu haben.
 
 ```bash
 export PROJECT_ID="$(jq -r '.project_id' outputs.json)"
-# Alternativ direkt aus Terraform (nur einer der beiden Befehle ist nötig)
+export REGION="$(jq -r '.region' outputs.json)"
+```
+
+Alternativ direkt aus Terraform (nur diese oder die obigen Kommandos sind nötig):
+
+```bash
 export PROJECT_ID="$(terraform output -json | jq -r '.project_id.value')"
+export REGION="$(terraform output -json | jq -r '.region.value')"
 ```
 
 Setze Variablen und Konfigurationen, sodass für `gcloud` und andere Tools klar ist,
@@ -247,7 +256,7 @@ sed "s/PROJECT_ID/${PROJECT_ID}/" sa-name-realtime.template.yaml | tee sa-name-r
 ### 3. Deployment der Cloud Function
 
 ```bash
-custodian run --output-dir logs sa-name-realtime.policy.yaml
+custodian run --output-dir logs --region "$REGION" sa-name-realtime.policy.yaml
 ```
 
 > [!WARNING]
