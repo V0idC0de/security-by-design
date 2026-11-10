@@ -23,6 +23,9 @@ resource "google_project" "demo" {
   folder_id       = var.parent_folder
   deletion_policy = "DELETE"
   billing_account = data.google_billing_account.my_billing_account.id
+  lifecycle {
+    ignore_changes = [org_id]
+  }
 }
 
 data "google_project" "existing-demo" {
